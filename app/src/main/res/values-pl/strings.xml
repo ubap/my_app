@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Projekt Inżynierski</string>
-    <string name="action_settings">Ustawienia</string>
+    <string name="appName">Projekt Inżynierski</string>
+
+    <string name="save">Zapisz</string>
+
+    <!-- Ustawienia -->
+    <string name="settings">Ustawienia</string>
+    <string name="settings.language">Język</string>
 </resources>

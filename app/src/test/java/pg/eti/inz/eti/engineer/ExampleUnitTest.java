@@ -1,4 +1,4 @@
-package pg.eti.inz.eti.projekt_inzynierski;
+package pg.eti.inz.eti.engineer;
 
 import org.junit.Test;
 
