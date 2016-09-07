@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +16,7 @@ import java.util.logging.Logger;
 import pg.eti.inz.eti.engineer.settings.Option;
 import pg.eti.inz.eti.engineer.settings.utils.OptionType;
 import pg.eti.inz.eti.engineer.settings.utils.SettingsConstants;
+import pg.eti.inz.eti.engineer.utils.Constants;
 
 
 /**
@@ -27,7 +27,7 @@ public class SettingsDatabaseProvider extends SQLiteOpenHelper {
     private static final Logger LOGGER = Logger.getLogger(SettingsDatabaseProvider.class.getName());
 
     public SettingsDatabaseProvider(Context context) {
-        super(context, SettingsConstants.DATABASE_NAME, null, 1);
+        super(context, Constants.DATABASE_NAME, null, 1);
     }
 
     @Override
