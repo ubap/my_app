@@ -5,9 +5,6 @@ package pg.eti.inz.eti.engineer.settings.utils;
  */
 public class SettingsConstants {
 
-    //Nazwa bazy
-    public static final String DATABASE_NAME = "Engineer";
-
     //Tabele w bazie danych
     public static final String OPTIONS_DATABASE_TABLE = "settings";
 
