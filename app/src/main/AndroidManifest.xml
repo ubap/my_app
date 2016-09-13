@@ -13,15 +13,13 @@
             android:label="@string/appName">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".settings.activities.SettingsActivity" android:label="@string/settings">
-        </activity>
-
-        <activity android:name=".activities.EngineersActivity" android:configChanges="locale">
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:configChanges="locale">
         </activity>
 
     </application>
