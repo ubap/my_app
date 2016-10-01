@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,6 +17,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 
 import pg.eti.inz.eti.engineer.R;
+import pg.eti.inz.eti.engineer.settings.SettingsProvider;
 import pg.eti.inz.eti.engineer.utils.Constants;
 
 /**
@@ -28,11 +28,12 @@ public class GPSServiceProvider extends Service implements LocationListener {
     // Minimalny pokonany dystans potrzebny do aktualizacji lokalizacji w metrach
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 5;
     // Minimalny czas pomiedzy aktualizacjami lokalizacji w milisekundach
-    private static final long MIN_TIME_BETWEEN_UPDATES = 1000 * 60 * 1; // 1 minute
+    private static final long MIN_TIME_BETWEEN_UPDATES = 1000 * 10; // 10 sekund
 
     private final Context parentContext;
 
     private Boolean isGPSEnabled;
+    private Boolean isNetworkEnabled;
     private Boolean canGetLocation;
     private Location location;
     private double latitude;
@@ -105,21 +106,34 @@ public class GPSServiceProvider extends Service implements LocationListener {
             return null;
         }
         try {
-            canGetLocation = Boolean.TRUE;
             locationManager = (LocationManager) parentContext.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            if (isGPSEnabled) {
+            canGetLocation = isGPSEnabled || (isNetworkEnabled && SettingsProvider.getUseNetworkLocation(this));
+
+            if (isGPSEnabled && !SettingsProvider.getUseNetworkLocation(this)) {
                 if (location == null) {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                             MIN_TIME_BETWEEN_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES,
                             this);
                     location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (location != null) {
-                        longitude = location.getLongitude();
-                        latitude = location.getLatitude();
-                    }
+
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                }
+            } else if (isNetworkEnabled && SettingsProvider.getUseNetworkLocation(this)) {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        MIN_TIME_BETWEEN_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                        this);
+                Location networkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (isGPSEnabled && location != null) {
+                    location.setLongitude((location.getLongitude() + networkLocation.getLongitude()) / 2);
+                    location.setLatitude((location.getLatitude() + networkLocation.getLatitude()) / 2);
+                } else {
+                    location = networkLocation;
                 }
             }
         } catch (Exception e) {
