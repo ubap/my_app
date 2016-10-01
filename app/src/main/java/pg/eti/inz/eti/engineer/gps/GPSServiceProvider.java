@@ -108,22 +108,22 @@ public class GPSServiceProvider extends Service implements LocationListener {
         try {
             locationManager = (LocationManager) parentContext.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                && SettingsProvider.getUseNetworkLocation(this);
 
-            canGetLocation = isGPSEnabled || (isNetworkEnabled && SettingsProvider.getUseNetworkLocation(this));
+            canGetLocation = isGPSEnabled || isNetworkEnabled;
 
-            if (isGPSEnabled && !SettingsProvider.getUseNetworkLocation(this)) {
-                if (location == null) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                            MIN_TIME_BETWEEN_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                            this);
-                    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (isGPSEnabled) {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        MIN_TIME_BETWEEN_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                        this);
+                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
-                }
-            } else if (isNetworkEnabled && SettingsProvider.getUseNetworkLocation(this)) {
+                longitude = location.getLongitude();
+                latitude = location.getLatitude();
+            }
+            if (isNetworkEnabled && SettingsProvider.getUseNetworkLocation(this)) {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         MIN_TIME_BETWEEN_UPDATES,
                         MIN_DISTANCE_CHANGE_FOR_UPDATES,
