@@ -2,14 +2,13 @@ package pg.eti.inz.eti.engineer.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 
 import pg.eti.inz.eti.engineer.R;
+import pg.eti.inz.eti.engineer.utils.Constants;
 
 /**
- * Created by jakub on 13.09.16.
+ * Activity zawierające ustawienia aplikacji
  * https://developer.android.com/guide/topics/ui/settings.html
  * https://developer.android.com/reference/android/preference/PreferenceActivity.html
  */
@@ -17,9 +16,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
-
-        SetLanguageSummary();
+        addPreferencesFromResource(R.layout.settings_layout);
     }
 
     @Override
@@ -34,19 +31,9 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
-    private static String languageKey = "language";
-    private static String errMsg = "Err";
-
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(languageKey)) {
-            SetLanguageSummary();
+        if (key.equals(Constants.SETTINGS_GPS_USE_NETWORK_KEY)) {
+
         }
     }
-
-    private void SetLanguageSummary() {
-        Preference languagePref = findPreference(languageKey);
-        SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
-        languagePref.setSummary(sharedPreferences.getString(languageKey, errMsg));
-    }
-
 }
