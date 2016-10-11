@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import pg.eti.inz.eti.engineer.R;
+import pg.eti.inz.eti.engineer.gps.GPSServiceProvider2;
 
 /**
  * Main menu of application
@@ -16,11 +17,17 @@ public class MainMenuActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu_layout);
-    }
 
+        GPSServiceProvider2.getInstance().init(this);
+    }
 
     public void navigateToSettings(View view) {
         Intent settingsIntent = new Intent(this, SettingsActivity.class);
         startActivity(settingsIntent);
+    }
+
+    public void navigateToMap(View view) {
+        Intent mapIntent = new Intent(this, MapsActivity.class);
+        startActivity(mapIntent);
     }
 }
