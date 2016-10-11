@@ -6,9 +6,29 @@
 
     <!-- Settings -->
     <string name="settings">Settings</string>
+
+    <!-- Languages -->
     <string name="settings.language">Language</string>
     <string-array name="settingsLanguages">
         <item>English</item>
         <item>Polski</item>
     </string-array>
+
+    <!-- Settings keys -->
+    <string name="settings.gps.network.key" translatable="false">useNetwork</string>
+
+    <!-- Settings titles -->
+    <string name="settings.gps.network.title">Use network to get location.</string>
+
+    <!-- Settings default values -->
+
+    <!-- Settings summaries -->
+    <string name="settings.gps.network.summary">When selected, location will be firstly got from the Internet.</string>
+
+    <!-- GPS -->
+    <string name="gps.alert.title">GPS Settings</string>
+    <string name="gps.alert.message">GPS is disabled. Do you want to go to settings menu?</string>
+
+    <!-- Common -->
+    <string name="cancel">Cancel</string>
 </resources>

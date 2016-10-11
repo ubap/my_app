@@ -7,4 +7,9 @@
     <!-- Ustawienia -->
     <string name="settings">Ustawienia</string>
     <string name="settings.language">Język</string>
+    <string name="cancel">Anuluj</string>
+    <string name="gps.alert.message">GPS jest wyłączony. Czy chcesz przejść do ustawień?</string>
+    <string name="gps.alert.title">Ustawienia GPS</string>
+    <string name="settings.gps.network.summary">Jeśli zaznaczone, lokalizacja będzie pobierana w pierwszej kolejności z Internetu.</string>
+    <string name="settings.gps.network.title">Użyj Internetu do pobierania lokalizacji.</string>
 </resources>
