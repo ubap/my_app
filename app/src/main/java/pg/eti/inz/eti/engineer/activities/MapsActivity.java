@@ -67,7 +67,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         updateSpeedMeter(0);    // set speed at 0
     }
 
-    public void updateMapPosition(Location location) {
+    private void updateMapPosition(Location location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (markerSelf == null) {
             markerSelf = mMap.addMarker(new MarkerOptions().position(latLng));
@@ -79,7 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // Speed in meters per second
     @SuppressLint("DefaultLocale")
-    public void updateSpeedMeter(float speed) {
+    private void updateSpeedMeter(float speed) {
         // TODO: use only supported locales, if not fallback to default (en)
         speedMeter.setText(String.format("%.1f",speed * (60 * 60) / 1000));
     }
