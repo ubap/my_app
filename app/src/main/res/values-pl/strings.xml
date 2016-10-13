@@ -14,5 +14,5 @@
     <string name="settings.gps.network.title">Użyj Internetu do pobierania lokalizacji.</string>
 
     <string name="map.kmph">km/h</string>
-    <string name="map.speedmeter.widthtemplate">0,00</string>
+    <string name="map.km">km</string>
 </resources>

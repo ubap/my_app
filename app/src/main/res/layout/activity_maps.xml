@@ -1,51 +1,106 @@
 <!--https://developers.google.com/maps/documentation/android-api/map-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="pg.eti.inz.eti.engineer.activities.MapsActivity"
-        map:uiZoomControls="true"
-        map:uiZoomGestures="false"
-        map:cameraZoom="17"
-        tools:layout="@layout/blank_layout">
+        app:uiZoomControls="true"
+        app:uiZoomGestures="false"
+        app:cameraZoom="17"
+        tools:layout="@layout/blank_layout"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
     </fragment>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <CheckBox
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="27dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_marginTop="17dp"
+        android:id="@+id/MapFollowPosCheckBox"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="14dp"
+        android:layout_marginEnd="14dp"
+        android:checked="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:padding="8dp"
         android:background="@drawable/speedometer_background"
         android:visibility="visible"
         android:layout_width="wrap_content"
-        android:id="@+id/speedMeterLayout">
+        android:id="@+id/speedMeterLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:baselineAligned="false">
 
-        <TextView
-            android:text="@string/map.speedmeter.widthtemplate"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/MapSpeedMeter"
+            android:layout_weight="1"
             android:gravity="center"
-            android:textSize="50sp"
-            android:textStyle="normal|bold" />
+            android:layout_marginRight="8dp">
 
-        <TextView
-            android:text="@string/map.kmph"
+            <TextView
+                android:text="@string/map.speedmeter.widthtemplate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/MapSpeedMeter"
+                android:textSize="50sp"
+                android:textStyle="normal|bold"
+                android:maxLines="1"
+                android:gravity="center"
+                android:ellipsize="none"/>
+
+            <TextView
+                android:text="@string/map.kmph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textView2"
-            android:gravity="center" />
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:text="@string/map.speedmeter.widthtemplate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/MapTripMeter"
+                android:textSize="50sp"
+                android:maxLines="1"
+                android:textStyle="normal|bold"
+                android:ellipsize="none"
+                android:gravity="center" />
+
+            <TextView
+                android:text="@string/map.km"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView5"
+                android:layout_gravity="center" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>
