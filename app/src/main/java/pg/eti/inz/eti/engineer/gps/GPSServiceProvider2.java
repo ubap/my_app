@@ -20,11 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class GPSServiceProvider2 implements LocationListener {
 
     private static GPSServiceProvider2 instance;
-
-    private GoogleMap gMap;
-
-    public void GPSServiceProvider2() {
-    }
+    private Location location;
 
     public static GPSServiceProvider2 getInstance() {
         if (instance == null) {
@@ -36,30 +32,22 @@ public class GPSServiceProvider2 implements LocationListener {
     public void init(Activity context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-        // Co może wyrzucić to SecurityException?
+        // TODO: check permission
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
         }
-        catch (SecurityException e) { }
+        catch (SecurityException e) { e.printStackTrace(); }
     }
 
-    public void initGMap(GoogleMap gMap) {
-        this.gMap = gMap;
+    public Location getLocation() {
+        return location;
     }
 
     // LocationListener
     public void onLocationChanged(Location location) {
         // Called when a new location is found by the network location provider
         Log.d("MyApp","GPSServiceProvider2::onLocationChanged, Location:"+location.toString());
-        if (gMap != null) try
-        {
-            LatLng sydney = new LatLng(location.getLatitude(), location.getLongitude());
-            gMap.addMarker(new MarkerOptions().position(sydney).title("Jesteś tutaj"));
-            gMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-        } catch (Exception e) {
-            Log.e("MyApp", "GPSServiceProvider2 failed to interact with gMap!");
-        };
+        this.location = location;
     }
     // LocationListener
     public void onStatusChanged(String provider, int status, Bundle extras) {}

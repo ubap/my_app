@@ -33,4 +33,7 @@
     <!-- Common -->
     <string name="cancel">Cancel</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="map.kmph">KMPH</string>
+    <string name="map.speedmeter.widthtemplate">00.0</string>
 </resources>
