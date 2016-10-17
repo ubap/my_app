@@ -37,4 +37,5 @@
     <string name="map.kmph">KMPH</string>
     <string name="map.speedmeter.widthtemplate" translatable="false">00.0</string>
     <string name="map.km">KM</string>
+    <string name="map.search">Search</string>
 </resources>

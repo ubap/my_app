@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import pg.eti.inz.eti.engineer.R;
+import pg.eti.inz.eti.engineer.gps.CoreService;
 import pg.eti.inz.eti.engineer.gps.GPSServiceProvider2;
 
 /**
@@ -19,6 +20,9 @@ public class MainMenuActivity extends Activity{
         setContentView(R.layout.main_menu_layout);
 
         GPSServiceProvider2.getInstance().init(this);
+        Intent intent = new Intent(this, CoreService.class);
+        startService(intent);
+
     }
 
     public void navigateToSettings(View view) {

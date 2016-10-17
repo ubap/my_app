@@ -15,4 +15,7 @@
 
     <string name="map.kmph">km/h</string>
     <string name="map.km">km</string>
+    <string name="map.search">Szukaj</string>
+    <string name="title_activity_maps">Mapa</string>
+    <string name="map">Mapa</string>
 </resources>

@@ -1,17 +1,18 @@
 package pg.eti.inz.eti.engineer.gps;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import android.app.Service;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,13 +21,12 @@ import java.util.List;
  * https://developer.android.com/reference/android/location/LocationManager.html
  */
 
-public class GPSServiceProvider2 implements LocationListener {
+public class GPSServiceProvider2 {
 
     private static GPSServiceProvider2 instance;
-    private Location location;
 
-    private List<Location> path = new LinkedList<>();
-    private double pathLength = 0;
+    private CoreService.GPSBinder mService;
+    private Boolean mBound = false;
 
     public static GPSServiceProvider2 getInstance() {
         if (instance == null) {
@@ -36,37 +36,46 @@ public class GPSServiceProvider2 implements LocationListener {
     }
 
     public void init(Activity context) {
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-        // TODO: check permission
-        try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        }
-        catch (SecurityException e) { e.printStackTrace(); }
+        Intent intent = new Intent(context, CoreService.class);
+        context.bindService(intent, mConnection, 0);
     }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = (CoreService.GPSBinder) service;
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     public Location getLocation() {
-        return location;
-    }
-
-    public List<Location>getPath() { return path; }
-
-    public double getPathLength() { return pathLength; }
-
-    // LocationListener
-    public void onLocationChanged(Location location) {
-        // Called when a new location is found by the network location provider
-        Log.d("MyApp","GPSServiceProvider2::onLocationChanged, Location:"+location.toString());
-        if (this.location != null) {
-            double stepLength =    pathLength = pathLength + this.location.distanceTo(location);
+        if (mBound) {
+            return mService.getLocation();
+        } else {
+            return null;
         }
-        this.location = location;
-        path.add(location);
     }
-    // LocationListener
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
-    // LocationListener
-    public void onProviderEnabled(String provider) {}
-    // LocationListener
-    public void onProviderDisabled(String provider) {}
+
+    public List<Location>getPath() {
+        if (mBound) {
+            return mService.getPath();
+        } else {
+            return null;
+        }
+    }
+
+    public double getPathLength() {
+        if (mBound) {
+            return mService.getPathLength();
+        } else {
+            return 0;
+        }
+    }
+
 }
