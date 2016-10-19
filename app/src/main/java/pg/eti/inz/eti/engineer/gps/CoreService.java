@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import pg.eti.inz.eti.engineer.R;
+import pg.eti.inz.eti.engineer.data.Trip;
 
 /**
  * Created by ubap on 2016-10-15.
@@ -31,24 +32,34 @@ public class CoreService extends Service implements LocationListener{
         @Override
         public void run() {
             handler.postDelayed(this, 1000);
-            // CO TU SIE DZIAC MA
+            // PROPOZYCJA: WRZUCAC DANE DO TRIPA CO 1S JAK BEDA ODCZYTY Z INNYCH CZUJNIKÓW
         }
     };
 
+    private boolean tracking = false;
+    private Trip currTrip;
     private Location location;
-    private List<Location> path = new LinkedList<>();
-    private double pathLength = 0;
 
     private final IBinder mGPSBinder = new GPSBinder();
 
     public class GPSBinder extends Binder {
-        public Location getLocation() {
-            return location;
+        public Location getLocation() { return location; }
+        public boolean isTracking() { return tracking; }
+        public Trip getTrip() { return currTrip; }
+
+        // TODO: make this function boolean, check if can start tracking, return if started;
+        public void startTracking(Trip trip) {
+            if(tracking) {
+                return;
+            }
+            tracking = true;
+            currTrip = trip;
         }
 
-        public List<Location>getPath() { return path; }
-
-        public double getPathLength() { return pathLength; }
+        public Trip stopTracking() {
+            tracking = false;
+            return currTrip;
+        }
     }
 
     @Override
@@ -72,9 +83,8 @@ public class CoreService extends Service implements LocationListener{
         catch (SecurityException e) { e.printStackTrace(); }
 
         // make this service as a foreground one
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getBaseContext())
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
                 .setSmallIcon(R.drawable.apple_safari).setContentTitle("Trackowanie drogi").setContentText("Trwa");
-
 
         this.startForeground(0, mBuilder.build());
         return START_STICKY;
@@ -91,11 +101,14 @@ public class CoreService extends Service implements LocationListener{
     @Override
     public void onLocationChanged(Location location) {
         Log.d("myApp", "GPSServiceProvider2::GPSService::LocationListener::onLocationChanged");
-        if (this.location != null) {
-            pathLength = pathLength + location.distanceTo(location);
+        if(tracking) {
+//            if (this.location != null) {
+//                pathLength = pathLength + location.distanceTo(location);
+//            }
+            currTrip.getPath().add(location);
         }
+
         this.location = location;
-        path.add(location);
     }
 
     @Override
@@ -113,7 +126,4 @@ public class CoreService extends Service implements LocationListener{
 
     }
 
-    private void startGPSListener() {
-
-    }
 }

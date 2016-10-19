@@ -17,86 +17,7 @@
         tools:layout="@layout/blank_layout"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-    </fragment>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:padding="8dp"
-        android:background="@drawable/speedometer_background"
-        android:visibility="visible"
-        android:layout_width="wrap_content"
-        android:id="@+id/speedMeterLayout"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:baselineAligned="false">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_marginRight="8dp">
-
-            <TextView
-                android:text="@string/map.speedmeter.widthtemplate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/MapSpeedMeter"
-                android:textSize="50sp"
-                android:textStyle="normal|bold"
-                android:maxLines="1"
-                android:gravity="center"
-                android:ellipsize="none"/>
-
-            <TextView
-                android:text="@string/map.kmph"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView2"
-                android:gravity="center" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_marginLeft="8dp">
-
-            <TextView
-                android:text="@string/map.speedmeter.widthtemplate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/MapTripMeter"
-                android:textSize="50sp"
-                android:maxLines="1"
-                android:textStyle="normal|bold"
-                android:ellipsize="none"
-                android:gravity="center" />
-
-            <TextView
-                android:text="@string/map.km"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView5"
-                android:layout_gravity="center" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <fragment
-        android:id="@+id/place_autocomplete_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-        />
+        android:layout_alignParentStart="true" />
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
@@ -109,16 +30,148 @@
         android:layout_alignParentStart="true"
         android:id="@+id/toolbar2" />
 
-    <CheckBox
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:id="@+id/MapFollowPosCheckBox"
+        android:layout_alignBottom="@+id/map">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_weight="1">
+
+            <pg.eti.inz.eti.engineer.view.CustomImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/imageView3"
+                android:background="@drawable/gpsfixbackground"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:padding="8dp"
+                android:src="@drawable/ic_stop_black_48dp"
+                android:onClick="stopTrackingBtnClickHandler" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"
+            android:background="@drawable/speedometer_background"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:id="@+id/mapSpeedMeterLayout"
+            android:layout_alignParentBottom="true"
+            android:baselineAligned="false"
+            android:elevation="8dp"
+            tools:ignore="UnusedAttribute" >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginRight="8dp"
+                tools:ignore="RtlHardcoded" >
+
+                <TextView
+                    android:text="@string/map.speedmeter.widthtemplate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/MapSpeedMeter"
+                    android:textSize="50sp"
+                    android:textStyle="normal|bold"
+                    android:maxLines="1"
+                    android:gravity="center"
+                    android:ellipsize="none" />
+
+                <TextView
+                    android:text="@string/map.kmph"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView2"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_marginLeft="8dp"
+                tools:ignore="RtlHardcoded">
+
+                <TextView
+                    android:text="@string/map.speedmeter.widthtemplate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/MapTripMeter"
+                    android:textSize="50sp"
+                    android:maxLines="1"
+                    android:textStyle="normal|bold"
+                    android:ellipsize="none"
+                    android:gravity="center" />
+
+                <TextView
+                    android:text="@string/map.km"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView5"
+                    android:layout_gravity="center" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <pg.eti.inz.eti.engineer.view.CustomImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_stop_black_48dp"
+                android:id="@+id/imageView4"
+                android:background="@drawable/gpsfixbackground"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:padding="8dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <pg.eti.inz.eti.engineer.view.CustomImageButton
+        android:id="@+id/mapFollowPositionButton"
+        android:padding="8dp"
+        android:layout_height="40dp"
+        android:layout_width="40dp"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
-        android:checked="true"
+        android:elevation="8dp"
+        android:background="@drawable/gpsfixbackground"
+        android:scaleType="fitXY"
         android:layout_below="@+id/toolbar2"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_gps_fixed_black_48dp"
+        tools:ignore="ContentDescription,UnusedAttribute"
+        android:onClick="followPositionBtnClickHandler" />
+
+    <Button
+        android:text="Start tracking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mapStartTrackingBtn"
+        android:layout_centerInParent="false"
+        android:layout_centerHorizontal="true"
+        android:textSize="24sp"
+        android:textStyle="normal|bold"
+        android:onClick="startTrackingBtnClickHandler" />
 
 </RelativeLayout>

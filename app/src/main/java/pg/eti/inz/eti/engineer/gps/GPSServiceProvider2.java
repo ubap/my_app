@@ -17,6 +17,8 @@ import android.app.Service;
 import java.util.LinkedList;
 import java.util.List;
 
+import pg.eti.inz.eti.engineer.data.Trip;
+
 /**
  * https://developer.android.com/reference/android/location/LocationManager.html
  */
@@ -62,20 +64,20 @@ public class GPSServiceProvider2 {
         }
     }
 
-    public List<Location>getPath() {
-        if (mBound) {
-            return mService.getPath();
-        } else {
-            return null;
-        }
+    public void startTracking(Trip trip) {
+        mService.startTracking(trip);
     }
 
-    public double getPathLength() {
-        if (mBound) {
-            return mService.getPathLength();
-        } else {
-            return 0;
-        }
+    public Trip stopTracking() {
+        return mService.stopTracking();
+    }
+
+    public boolean isTracking() {
+        return mService.isTracking();
+    }
+
+    public Trip getTrip() {
+        return mService.getTrip();
     }
 
 }
