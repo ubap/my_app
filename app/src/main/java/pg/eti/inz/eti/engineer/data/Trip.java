@@ -10,15 +10,25 @@ public class Trip /*implements Serializable*/ {
     // TODO: Czy service działa w innym wątku? czy może nastąpić wyścig w dostępie do tej klasy?
     // TODO: niech ta klasa sama sie zarzadza w trip containerze poprzez db Manager
     // w db managerze stworzyc unfinished trips i finished trips i mozna potem dodac jakies ozyskiwanie w razie faila (POTEM)
-    List<Location> path = new LinkedList<>();
+    private List<Location> path = new LinkedList<>();
+    private Location lastLocation;
+    private float distance = 0.0f;
 
-    Date date;
-    boolean finished = false;
+    private Date date;
+    private boolean finished = false;
 
     public Trip() {
     }
 
     public List<Location> getPath() {
         return path;
+    }
+
+    public void addLocation(Location location) {
+        if (this.lastLocation != null) {
+            distance = distance + lastLocation.distanceTo(location);
+        }
+        path.add(location);
+        lastLocation = location;
     }
 }

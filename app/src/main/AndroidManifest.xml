@@ -17,6 +17,7 @@
             android:label="@string/appName">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -41,11 +42,13 @@
 
         <activity
             android:name=".activities.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
 
+        <service
+            android:name=".gps.CoreService"
+            android:enabled="true" />
 
-        <service android:enabled="true" android:name=".gps.CoreService" />
-
+        <activity android:name=".activities.TripsActivity"></activity>
     </application>
 
 </manifest>

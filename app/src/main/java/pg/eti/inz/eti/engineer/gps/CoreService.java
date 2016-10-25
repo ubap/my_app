@@ -49,7 +49,7 @@ public class CoreService extends Service implements LocationListener{
 
         // TODO: make this function boolean, check if can start tracking, return if started;
         public void startTracking(Trip trip) {
-            if(tracking) {
+            if (tracking) {
                 return;
             }
             tracking = true;
@@ -102,12 +102,8 @@ public class CoreService extends Service implements LocationListener{
     public void onLocationChanged(Location location) {
         Log.d("myApp", "GPSServiceProvider2::GPSService::LocationListener::onLocationChanged");
         if(tracking) {
-//            if (this.location != null) {
-//                pathLength = pathLength + location.distanceTo(location);
-//            }
-            currTrip.getPath().add(location);
+            currTrip.addLocation(location);
         }
-
         this.location = location;
     }
 

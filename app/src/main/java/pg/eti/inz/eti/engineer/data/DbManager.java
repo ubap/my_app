@@ -5,7 +5,7 @@ public class DbManager {
 
     TripContainer trips;
 
-    DbManager getInstance() {
+    public static DbManager getInstance() {
         if(instance == null) {
             instance = new DbManager();
         }

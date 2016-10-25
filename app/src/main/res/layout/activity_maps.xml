@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="pg.eti.inz.eti.engineer.activities.MapsActivity"
-        app:uiZoomControls="true"
+        app:uiZoomControls="false"
         app:uiZoomGestures="false"
         app:cameraZoom="17"
         tools:layout="@layout/blank_layout"
@@ -45,12 +45,14 @@
             <pg.eti.inz.eti.engineer.view.CustomImageButton
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:id="@+id/imageView3"
+                android:id="@+id/mapStopTrackingBtn"
                 android:background="@drawable/gpsfixbackground"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:padding="8dp"
                 android:src="@drawable/ic_stop_black_48dp"
-                android:onClick="stopTrackingBtnClickHandler" />
+                android:onClick="stopTrackingBtnClickHandler"
+                android:elevation="8dp"
+                android:visibility="invisible" />
         </LinearLayout>
 
         <LinearLayout
@@ -134,13 +136,27 @@
             android:layout_weight="1">
 
             <pg.eti.inz.eti.engineer.view.CustomImageButton
-                android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/ic_stop_black_48dp"
-                android:id="@+id/imageView4"
+                android:src="@drawable/ic_add_black_48dp"
+                android:id="@+id/mapZoomInBtn"
                 android:background="@drawable/gpsfixbackground"
                 android:layout_gravity="center_vertical|center_horizontal"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:layout_width="40dp"
+                android:layout_marginBottom="8dp"
+                android:onClick="zoomInBtnClickHandler"
+                android:elevation="8dp" />
+
+            <pg.eti.inz.eti.engineer.view.CustomImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_remove_black_48dp"
+                android:id="@+id/mapZoomOutBtn"
+                android:background="@drawable/gpsfixbackground"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:padding="8dp"
+                android:onClick="zoomOutBtnClickHandler"
+                android:elevation="8dp" />
         </LinearLayout>
 
     </LinearLayout>
@@ -154,7 +170,6 @@
         android:layout_marginEnd="16dp"
         android:elevation="8dp"
         android:background="@drawable/gpsfixbackground"
-        android:scaleType="fitXY"
         android:layout_below="@+id/toolbar2"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -169,9 +184,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/mapStartTrackingBtn"
         android:layout_centerInParent="false"
-        android:layout_centerHorizontal="true"
         android:textSize="24sp"
         android:textStyle="normal|bold"
-        android:onClick="startTrackingBtnClickHandler" />
+        android:onClick="startTrackingBtnClickHandler"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@+id/map"
+        android:layout_marginBottom="40dp" />
 
 </RelativeLayout>

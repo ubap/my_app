@@ -3,29 +3,18 @@ package pg.eti.inz.eti.engineer.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.graphics.Point;
 import android.location.Location;
-import android.location.LocationManager;
-import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MultiAutoCompleteTextView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -41,9 +30,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import pg.eti.inz.eti.engineer.R;
+import pg.eti.inz.eti.engineer.data.DbManager;
 import pg.eti.inz.eti.engineer.data.Trip;
 import pg.eti.inz.eti.engineer.gps.GPSServiceProvider2;
 import pg.eti.inz.eti.engineer.view.CustomImageButton;
@@ -59,6 +50,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private CustomImageButton followPositionButton;
 
     private boolean followPosition = true;
+    private Polyline pathPolyLine;
 
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
@@ -67,13 +59,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             GPSServiceProvider2 GPSService = GPSServiceProvider2.getInstance();
             Location location = GPSService.getLocation();
             if (location != null) {
-                // update the camera position
+                // update camera position
                 if (followPosition) {
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }
                 updateSpeedMeter(location.getSpeed());
-                if(GPSService.isTracking()) {
+                if (GPSService.isTracking()) {
                     Trip trip = GPSService.getTrip();
                     //updateTripMeter(trip.getLength*(;));
                     drawPath(trip.getPath());
@@ -152,7 +144,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        } catch (SecurityException e) { e.printStackTrace(); }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
 
         // update map thread
         handler.post(runnable);
@@ -178,18 +172,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void drawPath(List<Location> path) {
-        PolylineOptions polylineOptions = new PolylineOptions();
-        for (Location location : path) {
-            polylineOptions.add(new LatLng(location.getLatitude(), location.getLongitude()));
+        // TODO: to rysuje ciagle nowe kreski
+        // TODO: zrobic jakis handler i ulepszac kreske ktora juz jest
+        if (pathPolyLine == null) {
+            PolylineOptions polylineOptions = new PolylineOptions();
+            for (Location location : path) {
+                polylineOptions.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
+            pathPolyLine = mMap.addPolyline(polylineOptions.width(5).color(Color.RED));
+        } else {
+            List<LatLng> latLngList = new LinkedList<>();
+            for (Location location : path) {
+                latLngList.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            }
+            pathPolyLine.setPoints(latLngList);
         }
-        Polyline line = mMap.addPolyline(polylineOptions.width(5).color(Color.RED));
+    }
+
+    private void clearPath() {
+        if (pathPolyLine != null) {
+            pathPolyLine.remove();
+        }
     }
 
     // Speed in meters per second
     @SuppressLint("DefaultLocale")
     private void updateSpeedMeter(float speed) {
         // TODO: use only supported locale, if not fallback to default (en)
-        speedMeter.setText(String.format("%.1f",speed * (60 * 60) / 1000));
+        speedMeter.setText(String.format("%.1f", speed * (60 * 60) / 1000));
     }
 
     // trip in meters
@@ -205,7 +215,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void updateFollowPositionButton() {
-        if(followPosition) {
+        if (followPosition) {
             followPositionButton.setImageResource(R.drawable.ic_gps_fixed_black_48dp);
             handler.removeCallbacks(runnable);
             handler.post(runnable);
@@ -215,8 +225,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void startTrackingBtnClickHandler(View view) {
-        Button startStrackingButton = (Button) findViewById(R.id.mapStartTrackingBtn);
-        startStrackingButton.setVisibility(View.INVISIBLE);
+        Button startTrackingButton = (Button) findViewById(R.id.mapStartTrackingBtn);
+        startTrackingButton.setVisibility(View.INVISIBLE);
+        CustomImageButton stopTrackingButton = (CustomImageButton) findViewById(R.id.mapStopTrackingBtn);
+        stopTrackingButton.setVisibility(View.VISIBLE);
         LinearLayout speedMeterLayout = (LinearLayout) findViewById(R.id.mapSpeedMeterLayout);
         speedMeterLayout.setVisibility(View.VISIBLE);
 
@@ -224,11 +236,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void stopTrackingBtnClickHandler(View view) {
-        GPSServiceProvider2.getInstance().stopTracking();
+        Button startTrackingButton = (Button) findViewById(R.id.mapStartTrackingBtn);
+        startTrackingButton.setVisibility(View.VISIBLE);
+        CustomImageButton stopTrackingButton = (CustomImageButton) findViewById(R.id.mapStopTrackingBtn);
+        stopTrackingButton.setVisibility(View.INVISIBLE);
+        LinearLayout speedMeterLayout = (LinearLayout) findViewById(R.id.mapSpeedMeterLayout);
+        speedMeterLayout.setVisibility(View.INVISIBLE);
+
+        Trip trip = GPSServiceProvider2.getInstance().stopTracking();
+        DbManager.getInstance().getTripContainer().addTrip(trip);
+
+        clearPath();
     }
 
     public void followPositionBtnClickHandler(View view) {
         followPosition = !followPosition;
         updateFollowPositionButton();
+    }
+
+    public void zoomInBtnClickHandler(View view) {
+        float newZoom = mMap.getCameraPosition().zoom + 1.0f;
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(newZoom));
+    }
+
+    public void zoomOutBtnClickHandler(View view) {
+        float newZoom = mMap.getCameraPosition().zoom - 1.0f;
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(newZoom));
     }
 }

@@ -34,4 +34,9 @@ public class MainMenuActivity extends Activity{
         Intent mapIntent = new Intent(this, MapsActivity.class);
         startActivity(mapIntent);
     }
+
+    public void navigateToTrips(View view) {
+        Intent tripIntent = new Intent(this, TripsActivity.class);
+        startActivity(tripIntent);
+    }
 }
