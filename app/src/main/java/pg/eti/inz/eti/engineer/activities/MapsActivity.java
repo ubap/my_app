@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +36,7 @@ import pg.eti.inz.eti.engineer.R;
 import pg.eti.inz.eti.engineer.data.DbManager;
 import pg.eti.inz.eti.engineer.data.Trip;
 import pg.eti.inz.eti.engineer.gps.GPSServiceProvider2;
+import pg.eti.inz.eti.engineer.utils.Log;
 import pg.eti.inz.eti.engineer.view.CustomImageButton;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
@@ -99,11 +99,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 updateFollowPositionButton(false);
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                Log.i("myApp", "Place: " + place.getName());
+                Log.i(place.getName().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 // TODO: Handle the error.
-                Log.i("myApp", status.getStatusMessage());
+                Log.d(status.getStatusMessage());
 
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
@@ -164,7 +164,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onCameraMoveStarted(int reason) {
-        Log.d("MyApp", "MapsActivity::onCameraMoveStarted ");
+        Log.d();
         if (reason == REASON_GESTURE) {
             followPosition = false;
             updateFollowPositionButton();

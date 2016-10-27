@@ -11,13 +11,16 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.app.Service;
+
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.location.LocationSettingsResult;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import pg.eti.inz.eti.engineer.data.Trip;
+import pg.eti.inz.eti.engineer.utils.Log;
 
 /**
  * https://developer.android.com/reference/android/location/LocationManager.html
@@ -29,6 +32,7 @@ public class GPSServiceProvider2 {
 
     private CoreService.GPSBinder mService;
     private Boolean mBound = false;
+    private Object lockWaitForConnection = new Object();
 
     public static GPSServiceProvider2 getInstance() {
         if (instance == null) {
@@ -46,6 +50,7 @@ public class GPSServiceProvider2 {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d();
             mService = (CoreService.GPSBinder) service;
             mBound = true;
         }
@@ -80,4 +85,5 @@ public class GPSServiceProvider2 {
         return mService.getTrip();
     }
 
+    public PendingResult<LocationSettingsResult> checkLocationSettings() { return mService.checkLocationSettings(); }
 }

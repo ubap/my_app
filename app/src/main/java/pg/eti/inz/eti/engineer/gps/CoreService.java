@@ -11,21 +11,32 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import pg.eti.inz.eti.engineer.R;
 import pg.eti.inz.eti.engineer.data.Trip;
+import pg.eti.inz.eti.engineer.utils.Log;
 
 /**
  * Created by ubap on 2016-10-15.
  */
 
-public class CoreService extends Service implements LocationListener{
+public class CoreService extends Service implements
+        com.google.android.gms.location.LocationListener,
+        GoogleApiClient.ConnectionCallbacks {
 
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
@@ -40,7 +51,38 @@ public class CoreService extends Service implements LocationListener{
     private Trip currTrip;
     private Location location;
 
+    GoogleApiClient mGoogleApiClient;
+    LocationRequest mLocationRequest;
+    LocationSettingsRequest.Builder builder;
+
     private final IBinder mGPSBinder = new GPSBinder();
+
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d();
+        try {
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if (mLastLocation != null) {
+                location = mLastLocation;
+                Log.d(location.toString());
+            }
+        } catch (SecurityException e) { e.printStackTrace(); }
+        startLocationUpdates();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    protected void startLocationUpdates() {
+        try {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+        } catch(SecurityException e) { e.printStackTrace(); }
+    }
 
     public class GPSBinder extends Binder {
         public Location getLocation() { return location; }
@@ -60,6 +102,10 @@ public class CoreService extends Service implements LocationListener{
             tracking = false;
             return currTrip;
         }
+
+        public PendingResult<LocationSettingsResult> checkLocationSettings() {
+            return LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
+        }
     }
 
     @Override
@@ -68,25 +114,29 @@ public class CoreService extends Service implements LocationListener{
 
     @Override
     public void onDestroy() {
-        Log.d("myApp", "GPSServiceProvider2::GPSService::onDestroy");
+        Log.d();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("myApp", "GPSServiceProvider2::GPSService::onStartCommand");
-        // start gps listener
-        // TODO: Check if registering a location listener for second time won't break anything and is OK
-        LocationManager locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
-        try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        }
-        catch (SecurityException e) { e.printStackTrace(); }
+        Log.d();
+
+        mLocationRequest = intent.getParcelableExtra("LocationRequest");
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                //.addOnConnectionFailedListener(this)
+                .addConnectionCallbacks(this)
+                .addApi(LocationServices.API)
+                .build();
+
+        mGoogleApiClient.connect();
 
         // make this service as a foreground one
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext())
                 .setSmallIcon(R.drawable.apple_safari).setContentTitle("Trackowanie drogi").setContentText("Trwa");
 
         this.startForeground(0, mBuilder.build());
+
         return START_STICKY;
     }
 
@@ -100,26 +150,11 @@ public class CoreService extends Service implements LocationListener{
     // LocationListener
     @Override
     public void onLocationChanged(Location location) {
-        Log.d("myApp", "GPSServiceProvider2::GPSService::LocationListener::onLocationChanged");
+
+        Log.d(location.toString());
         if(tracking) {
             currTrip.addLocation(location);
         }
         this.location = location;
     }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
 }
