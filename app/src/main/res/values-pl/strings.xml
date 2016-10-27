@@ -12,4 +12,10 @@
     <string name="gps.alert.title">Ustawienia GPS</string>
     <string name="settings.gps.network.summary">Jeśli zaznaczone, lokalizacja będzie pobierana w pierwszej kolejności z Internetu.</string>
     <string name="settings.gps.network.title">Użyj Internetu do pobierania lokalizacji.</string>
+
+    <string name="map.kmph">km/h</string>
+    <string name="map.km">km</string>
+    <string name="map.search">Szukaj</string>
+    <string name="title_activity_maps">Mapa</string>
+    <string name="map">Mapa</string>
 </resources>
