@@ -32,7 +32,6 @@ public class GPSServiceProvider2 {
 
     private CoreService.GPSBinder mService;
     private Boolean mBound = false;
-    private Object lockWaitForConnection = new Object();
 
     public static GPSServiceProvider2 getInstance() {
         if (instance == null) {
@@ -84,6 +83,4 @@ public class GPSServiceProvider2 {
     public Trip getTrip() {
         return mService.getTrip();
     }
-
-    public PendingResult<LocationSettingsResult> checkLocationSettings() { return mService.checkLocationSettings(); }
 }
