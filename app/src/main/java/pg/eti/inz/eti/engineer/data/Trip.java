@@ -24,6 +24,8 @@ public class Trip /*implements Serializable*/ {
         return path;
     }
 
+    public double getDistance() { return distance; }
+
     public void addLocation(Location location) {
         if (this.lastLocation != null) {
             distance = distance + lastLocation.distanceTo(location);

@@ -67,7 +67,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 updateSpeedMeter(location.getSpeed());
                 if (GPSService.isTracking()) {
                     Trip trip = GPSService.getTrip();
-                    //updateTripMeter(trip.getLength*(;));
+                    updateTripMeter(trip.getDistance());
                     drawPath(trip.getPath());
                 }
             }
