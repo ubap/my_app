@@ -10,7 +10,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="pg.eti.inz.eti.engineer.activities.MapsActivity"
+        tools:context="pg.eti.inz.engineer.activities.MapsActivity"
         app:uiZoomControls="false"
         app:uiZoomGestures="false"
         app:cameraZoom="17"
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_weight="1">
 
-            <pg.eti.inz.eti.engineer.view.CustomImageButton
+            <pg.eti.inz.engineer.view.CustomImageButton
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:id="@+id/mapStopTrackingBtn"
@@ -135,7 +135,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-            <pg.eti.inz.eti.engineer.view.CustomImageButton
+            <pg.eti.inz.engineer.view.CustomImageButton
                 android:layout_height="40dp"
                 android:src="@drawable/ic_add_black_48dp"
                 android:id="@+id/mapZoomInBtn"
@@ -147,7 +147,7 @@
                 android:onClick="zoomInBtnClickHandler"
                 android:elevation="8dp" />
 
-            <pg.eti.inz.eti.engineer.view.CustomImageButton
+            <pg.eti.inz.engineer.view.CustomImageButton
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_remove_black_48dp"
@@ -161,7 +161,7 @@
 
     </LinearLayout>
 
-    <pg.eti.inz.eti.engineer.view.CustomImageButton
+    <pg.eti.inz.engineer.view.CustomImageButton
         android:id="@+id/mapFollowPositionButton"
         android:padding="8dp"
         android:layout_height="40dp"

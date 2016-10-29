@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="pg.eti.inz.eti.engineer">
+    package="pg.eti.inz.engineer">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -43,6 +43,9 @@
         <activity
             android:name=".activities.MapsActivity"
             android:label="@string/title_activity_maps" />
+
+        <activity android:name=".activities.DashboardActivity"
+            android:label="@string/dashboard.title" />
 
         <service
             android:name=".gps.CoreService"
