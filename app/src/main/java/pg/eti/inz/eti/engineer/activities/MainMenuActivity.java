@@ -64,7 +64,7 @@ public class MainMenuActivity extends Activity implements
                 LocationServices.SettingsApi.checkLocationSettings(googleApiClient,
                         builder.build());
 
-                result.setResultCallback(this);
+        result.setResultCallback(this);
 
         Intent intent = new Intent(this, CoreService.class);
         intent.putExtra("LocationRequest", locationRequest);
