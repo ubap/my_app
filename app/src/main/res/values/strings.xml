@@ -38,4 +38,9 @@
     <string name="map.speedmeter.widthtemplate" translatable="false">00.0</string>
     <string name="map.km">KM</string>
     <string name="map.search">Search</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard.title">Dashboard</string>
+    <string name="dashboard.add.speedometer">Add speed-o-meter</string>
+    <string name="dashboard.switchBrightness">Switch display mode</string>
 </resources>

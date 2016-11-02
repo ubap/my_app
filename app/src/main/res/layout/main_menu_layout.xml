@@ -13,10 +13,12 @@
         android:onClick="navigateToMap"/>
 
     <Button
-        android:text="Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button2" />
+        android:text="@string/dashboard.title"
+        android:id="@+id/dashboardMainMenuBtn"
+        android:layout_gravity="center_horizontal"
+        android:onClick="navigateToDashboard"/>
 
     <Button
         android:layout_width="match_parent"
