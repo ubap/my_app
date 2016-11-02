@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--<item
+        android:id="@+id/dashboard_add_clock"
+        android:icon="@drawable/ic_add_black_48dp"
+        android:title="@string/dashboard.title"
+        app:showAsAction="ifRoom|withText">
+        <menu>
+            <item android:id="@+id/dashboard_add_speedometer"
+                android:title="@string/dashboard.add.speedometer" />
+        </menu>
+    </item>-->
+    <item android:id="@+id/dashboard_brightness"
+        android:icon="@drawable/ic_brightness_3_black_48dp"
+        android:title="@string/dashboard.switchBrightness"
+        app:showAsAction="ifRoom|withText" />
+</menu>
