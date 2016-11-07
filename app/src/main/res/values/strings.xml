@@ -34,6 +34,7 @@
     <string name="cancel">Cancel</string>
     <string name="title_activity_maps">Map</string>
 
+    <!-- Map -->
     <string name="map.kmph">KMPH</string>
     <string name="map.speedmeter.widthtemplate" translatable="false">00.0</string>
     <string name="map.km">KM</string>
@@ -43,4 +44,9 @@
     <string name="dashboard.title">Dashboard</string>
     <string name="dashboard.add.speedometer">Add speed-o-meter</string>
     <string name="dashboard.switchBrightness">Switch display mode</string>
+
+    <!-- Trips -->
+    <string name="trips.distance">Distance</string>
+    <string name="trips.startTime">Start</string>
+    <string name="trips.finishTIme">Finish</string>
 </resources>

@@ -21,4 +21,7 @@
     <string name="dashboard.add.speedometer">Dodaj prędkościomierz</string>
     <string name="dashboard.title">Wskaźniki</string>
     <string name="dashboard.switchBrightness">Zmień sposób wyświetlania</string>
+    <string name="trips.distance">Odległość</string>
+    <string name="trips.finishTIme">Koniec</string>
+    <string name="trips.startTime">Początek</string>
 </resources>

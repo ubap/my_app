@@ -1,4 +1,4 @@
-package pg.eti.inz.engineer.view;
+package pg.eti.inz.engineer.components;
 
 import android.content.Context;
 import android.util.AttributeSet;

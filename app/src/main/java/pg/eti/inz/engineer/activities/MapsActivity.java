@@ -3,7 +3,6 @@ package pg.eti.inz.engineer.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,9 +34,10 @@ import java.util.List;
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.data.DbManager;
 import pg.eti.inz.engineer.data.Trip;
+import pg.eti.inz.engineer.gps.CoreService;
 import pg.eti.inz.engineer.gps.GPSServiceProvider2;
 import pg.eti.inz.engineer.utils.Log;
-import pg.eti.inz.engineer.view.CustomImageButton;
+import pg.eti.inz.engineer.components.CustomImageButton;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnCameraMoveStartedListener {
@@ -45,9 +45,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     private GoogleMap mMap;
+    private DbManager dbManager;
     private TextView speedMeter;
     private TextView tripMeter;
+    private TextView gpsStatusDisplay;
     private CustomImageButton followPositionButton;
+    private CustomImageButton stopTrackingButton;
+    private Button startTrackingButton;
+    private LinearLayout speedMeterLayout;
 
     private boolean followPosition = true;
     private Polyline pathPolyLine;
@@ -57,6 +62,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         public void run() {
             GPSServiceProvider2 GPSService = GPSServiceProvider2.getInstance();
+            // update gps status display
+            CoreService.GPSStatus gpsStatus = GPSService.getGPSStatus();
+            switch (gpsStatus) {
+                case DISABLED:
+                    gpsStatusDisplay.setText("GPS DISABLED");
+                    break;
+                case NOT_FIXED:
+                    gpsStatusDisplay.setText("GPS NOT FIXED");
+                    break;
+                case FIXED:
+                    gpsStatusDisplay.setText("GPS FIXED");
+                    break;
+            }
+
+
             Location location = GPSService.getLocation();
             if (location != null) {
                 // update camera position
@@ -80,6 +100,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        startTrackingButton = (Button) findViewById(R.id.mapStartTrackingBtn);
+        stopTrackingButton = (CustomImageButton) findViewById(R.id.mapStopTrackingBtn);
+        followPositionButton = (CustomImageButton) findViewById(R.id.mapFollowPositionButton);
+        speedMeterLayout = (LinearLayout) findViewById(R.id.mapSpeedMeterLayout);
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(myToolbar);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -87,7 +113,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        followPositionButton = (CustomImageButton) findViewById(R.id.mapFollowPositionButton);
+        // initial visible buttons
+        if (GPSServiceProvider2.getInstance().isTracking()) {
+            startTrackingButton.setVisibility(View.INVISIBLE);
+            stopTrackingButton.setVisibility(View.VISIBLE);
+            speedMeterLayout.setVisibility(View.VISIBLE);
+        } else {
+            startTrackingButton.setVisibility(View.VISIBLE);
+            stopTrackingButton.setVisibility(View.INVISIBLE);
+            speedMeterLayout.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -123,7 +158,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         switch (item.getItemId()) {
             case R.id.action_search:
                 try {
-                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(this);
+                    Intent intent = new PlaceAutocomplete.
+                            IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(this);
                     startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
                 } catch (GooglePlayServicesRepairableException e) {
                     // TODO: Handle the error.
@@ -140,6 +176,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setLocationSource(GPSServiceProvider2.getInstance().getLocationSource());
         mMap.setOnCameraMoveStartedListener(this);
         try {
             mMap.setMyLocationEnabled(true);
@@ -159,6 +196,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         tripMeter.setMinimumWidth((tripMeter.getWidth())); // HACK!
         updateTripMeter(0);
 
+        gpsStatusDisplay = (TextView) findViewById(R.id.textView);
+
         updateFollowPositionButton();
     }
 
@@ -172,8 +211,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void drawPath(List<Location> path) {
-        // TODO: to rysuje ciagle nowe kreski
-        // TODO: zrobic jakis handler i ulepszac kreske ktora juz jest
         if (pathPolyLine == null) {
             PolylineOptions polylineOptions = new PolylineOptions();
             for (Location location : path) {
@@ -190,9 +227,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void clearPath() {
+        Log.d();
         if (pathPolyLine != null) {
             pathPolyLine.remove();
         }
+        pathPolyLine = null;
     }
 
     // Speed in meters per second
@@ -227,7 +266,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void startTrackingBtnClickHandler(View view) {
         Button startTrackingButton = (Button) findViewById(R.id.mapStartTrackingBtn);
         startTrackingButton.setVisibility(View.INVISIBLE);
-        CustomImageButton stopTrackingButton = (CustomImageButton) findViewById(R.id.mapStopTrackingBtn);
+        CustomImageButton stopTrackingButton = (CustomImageButton)
+                findViewById(R.id.mapStopTrackingBtn);
         stopTrackingButton.setVisibility(View.VISIBLE);
         LinearLayout speedMeterLayout = (LinearLayout) findViewById(R.id.mapSpeedMeterLayout);
         speedMeterLayout.setVisibility(View.VISIBLE);
@@ -238,13 +278,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void stopTrackingBtnClickHandler(View view) {
         Button startTrackingButton = (Button) findViewById(R.id.mapStartTrackingBtn);
         startTrackingButton.setVisibility(View.VISIBLE);
-        CustomImageButton stopTrackingButton = (CustomImageButton) findViewById(R.id.mapStopTrackingBtn);
+        CustomImageButton stopTrackingButton = (CustomImageButton)
+                findViewById(R.id.mapStopTrackingBtn);
         stopTrackingButton.setVisibility(View.INVISIBLE);
         LinearLayout speedMeterLayout = (LinearLayout) findViewById(R.id.mapSpeedMeterLayout);
         speedMeterLayout.setVisibility(View.INVISIBLE);
 
         Trip trip = GPSServiceProvider2.getInstance().stopTracking();
-        DbManager.getInstance().getTripContainer().addTrip(trip);
+        if (dbManager == null) {
+            dbManager = new DbManager(this);
+        }
+        dbManager.saveTrip(trip);
 
         clearPath();
     }

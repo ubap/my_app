@@ -29,8 +29,6 @@ import pg.eti.inz.engineer.utils.Log;
  * Main menu of application
  */
 public class MainMenuActivity extends Activity implements
-        GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks,
         ResultCallback<LocationSettingsResult> {
 
     @Override
@@ -40,29 +38,7 @@ public class MainMenuActivity extends Activity implements
 
         GPSServiceProvider2.getInstance().init(this);
 
-        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(this)
-                .addOnConnectionFailedListener(this)
-                .addConnectionCallbacks(this)
-                .addApi(LocationServices.API)
-                .build();
-
-        googleApiClient.connect();
-
-        LocationRequest locationRequest = new LocationRequest()
-                .setInterval(10000)
-                .setFastestInterval(5000)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
-        PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(googleApiClient,
-                        builder.build());
-
-        result.setResultCallback(this);
-
         Intent intent = new Intent(this, CoreService.class);
-        intent.putExtra("LocationRequest", locationRequest);
         startService(intent);
     }
 
@@ -84,21 +60,6 @@ public class MainMenuActivity extends Activity implements
     public void navigateToTrips(View view) {
         Intent tripIntent = new Intent(this, TripsActivity.class);
         startActivity(tripIntent);
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
     }
 
     @Override

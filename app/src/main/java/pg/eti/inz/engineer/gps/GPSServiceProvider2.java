@@ -7,6 +7,8 @@ import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.IBinder;
 
+import com.google.android.gms.maps.LocationSource;
+
 import pg.eti.inz.engineer.data.Trip;
 import pg.eti.inz.engineer.utils.Log;
 
@@ -70,5 +72,13 @@ public class GPSServiceProvider2 {
 
     public Trip getTrip() {
         return mService.getTrip();
+    }
+
+    public LocationSource getLocationSource() {
+        return mService.getLocationSource();
+    }
+
+    public CoreService.GPSStatus getGPSStatus() {
+        return mService.getGPSStatus();
     }
 }
