@@ -24,4 +24,5 @@
     <string name="trips.distance">Odległość</string>
     <string name="trips.finishTIme">Koniec</string>
     <string name="trips.startTime">Początek</string>
+    <string name="trips">Podróże</string>
 </resources>

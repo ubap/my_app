@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.components.CompassComponent;
 import pg.eti.inz.engineer.components.SpeedometerComponent;
+import pg.eti.inz.engineer.components.TripmeterComponent;
 
 /**
  * Klasa obslugujaca aktywnosc zawierajaca liczniki i wskazniki
@@ -25,6 +26,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     private RelativeLayout dashboardLayout;
     private SpeedometerComponent speedometer;
     private CompassComponent compass;
+    private TripmeterComponent tripmeter;
     private Boolean isNightMode = Boolean.FALSE;
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -48,6 +50,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         dashboardLayout = (RelativeLayout) findViewById(R.id.dashboard_layout);
         speedometer = (SpeedometerComponent) findViewById(R.id.dashboard_speedometer);
         compass = (CompassComponent) findViewById(R.id.dashboard_compass);
+        tripmeter = (TripmeterComponent) findViewById(R.id.dashboard_trip_meter);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -90,12 +93,14 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                     dashboardLayout.setBackgroundColor(getResources().getColor(R.color.black));
                     speedometer.setBrightTheme();
                     compass.setBrightPointer();
+                    tripmeter.setBrightTheme();
                 } else {
                     item.setIcon(R.drawable.ic_brightness_3_black_48dp);
                     isNightMode = Boolean.FALSE;
                     dashboardLayout.setBackgroundColor(getResources().getColor(R.color.white));
                     speedometer.setDarkTheme();
                     compass.setDarkPointer();
+                    tripmeter.setDarkTheme();
                 }
                 return true;
             default:

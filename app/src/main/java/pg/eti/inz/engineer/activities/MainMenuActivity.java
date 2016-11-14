@@ -40,6 +40,10 @@ public class MainMenuActivity extends Activity implements
 
         Intent intent = new Intent(this, CoreService.class);
         startService(intent);
+
+        Intent gpsOptionsIntent = new Intent(
+                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(gpsOptionsIntent);
     }
 
     public void navigateToSettings(View view) {

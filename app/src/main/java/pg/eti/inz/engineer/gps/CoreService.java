@@ -3,6 +3,7 @@ package pg.eti.inz.engineer.gps;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,10 +20,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import pg.eti.inz.engineer.R;
+import pg.eti.inz.engineer.data.MeasurePoint;
 import pg.eti.inz.engineer.data.Trip;
 import pg.eti.inz.engineer.utils.Log;
 
-public class CoreService extends Service implements LocationListener {
+public class CoreService extends Service implements LocationListener,
+        GpsStatus.Listener {
 
 //    private Handler handler = new Handler();
 //    private Runnable runnable = new Runnable() {
@@ -59,6 +62,7 @@ public class CoreService extends Service implements LocationListener {
     private boolean tracking = false;
     private Trip currTrip;
     private Location location;
+    private LocationManager locationManager;
 
     private final IBinder mGPSBinder = new GPSBinder();
 
@@ -92,6 +96,7 @@ public class CoreService extends Service implements LocationListener {
     // Service
     @Override
     public void onCreate() {
+        locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
     }
 
     // Service
@@ -107,12 +112,11 @@ public class CoreService extends Service implements LocationListener {
 
         // start gps listener
         // TODO: Check if registering a location listener for second time won't break anything and is OK
-        LocationManager locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            locationManager.addGpsStatusListener(this);
         }
         catch (SecurityException e) { e.printStackTrace(); }
-
 
         // make this service as a foreground one
         NotificationCompat.Builder notificationBuilder =
@@ -140,7 +144,10 @@ public class CoreService extends Service implements LocationListener {
         statusGPS = GPSStatus.FIXED;
 
         if(tracking) {
-            currTrip.addLocation(location);
+            MeasurePoint measurePoint = new MeasurePoint();
+            measurePoint.setLocation(location);
+
+            currTrip.addMeasurePoint(measurePoint);
         }
         this.location = location;
 
@@ -159,14 +166,32 @@ public class CoreService extends Service implements LocationListener {
     // LocationListener
     @Override
     public void onProviderEnabled(String provider) {
-        Log.d();
-        statusGPS = GPSStatus.NOT_FIXED;
     }
 
     // LocationListener
     @Override
     public void onProviderDisabled(String provider) {
-        Log.d();
-        statusGPS = GPSStatus.DISABLED;
+    }
+
+    // android.location.GpsStatus.Listener
+    @Override
+    public void onGpsStatusChanged(int event) {
+        switch (event) {
+            case GpsStatus.GPS_EVENT_STARTED:
+                statusGPS = GPSStatus.NOT_FIXED;
+                break;
+            case GpsStatus.GPS_EVENT_FIRST_FIX:
+                statusGPS = GPSStatus.FIXED;
+                break;
+            case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+                // count satelites?
+                break;
+            case GpsStatus.GPS_EVENT_STOPPED:
+                statusGPS = GPSStatus.DISABLED;
+                break;
+            default:
+                Log.d("error: onGpsStatusChanged unhandled status");
+                break;
+        }
     }
 }

@@ -46,6 +46,7 @@
     <string name="dashboard.switchBrightness">Switch display mode</string>
 
     <!-- Trips -->
+    <string name="trips">Trips</string>
     <string name="trips.distance">Distance</string>
     <string name="trips.startTime">Start</string>
     <string name="trips.finishTIme">Finish</string>

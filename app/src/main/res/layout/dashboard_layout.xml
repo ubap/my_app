@@ -14,6 +14,13 @@
         android:layout_alignParentStart="true"
         android:id="@+id/dashboard_toolbar" />
 
+    <pg.eti.inz.engineer.components.TripmeterComponent
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dashboard_trip_meter"
+        android:layout_below="@+id/dashboard_speedometer"
+        android:layout_centerHorizontal="true" />
+
     <pg.eti.inz.engineer.components.SpeedometerComponent
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

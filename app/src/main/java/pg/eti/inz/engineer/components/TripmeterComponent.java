@@ -9,31 +9,31 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import pg.eti.inz.engineer.R;
+import pg.eti.inz.engineer.data.Trip;
 import pg.eti.inz.engineer.gps.GPSServiceProvider2;
 
-public class SpeedometerComponent extends LinearLayout {
+public class TripmeterComponent extends LinearLayout {
 
-    private final String DEFAULT_UNIT = getContext().getString(R.string.map_kmph);
-    private final String DEFAULT_SPEED_VALUE = "0.0";
+    private final String DEFAULT_UNIT = getContext().getString(R.string.map_km);
+    private final String DEFAULT_TRIP_VALUE = "0.0";
     private final Integer UPDATE_DELAY = 1000;
-    private final Double SPEED_FACTOR = 3.6;
 
     private TextView value;
     private TextView unit;
-    private Runnable updateSpeed;
-    private Handler speedUpdateHandler;
+    private Runnable updateTrip;
+    private Handler tripUpdateHandler;
 
-    public SpeedometerComponent (Context context) {
+    public TripmeterComponent(Context context) {
         super(context);
         init(context);
     }
 
-    public SpeedometerComponent (Context context, AttributeSet attrs) {
+    public TripmeterComponent(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public SpeedometerComponent (Context context, AttributeSet attrs, int defStyleAttr) {
+    public TripmeterComponent(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -49,28 +49,29 @@ public class SpeedometerComponent extends LinearLayout {
     }
 
     private void init (Context context) {
-        View.inflate(context, R.layout.speedometer, this);
+        View.inflate(context, R.layout.trip_meter, this);
         setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
 
-        value = (TextView) findViewById(R.id.speedometer_speed_value);
-        unit = (TextView) findViewById(R.id.speedometer_speed_unit);
-        speedUpdateHandler = new Handler();
+        value = (TextView) findViewById(R.id.tripMeterTripView);
+        unit = (TextView) findViewById(R.id.tripMeterUnitView);
+        tripUpdateHandler = new Handler();
 
-        updateSpeed = new Runnable() {
+        updateTrip = new Runnable() {
             @Override
             public void run() {
-                Location location = GPSServiceProvider2.getInstance().getLocation();
-                if (location != null) {
-                    String speed = String.format("%.1f", location.getSpeed() * SPEED_FACTOR);
+                Trip trip = GPSServiceProvider2.getInstance().getTrip();
+                if (trip != null) {
+                    String speed = String.format("%.1f", trip.getDistance() / 1000);
                     value.setText(speed);
                 }
-                speedUpdateHandler.postDelayed(this, UPDATE_DELAY);
+
+                tripUpdateHandler.postDelayed(this, UPDATE_DELAY);
             }
         };
 
-        value.setText(DEFAULT_SPEED_VALUE);
+        value.setText(DEFAULT_TRIP_VALUE);
         unit.setText(DEFAULT_UNIT);
 
-        speedUpdateHandler.post(updateSpeed);
+        tripUpdateHandler.post(updateTrip);
     }
 }
