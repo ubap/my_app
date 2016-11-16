@@ -29,6 +29,8 @@
     <!-- GPS -->
     <string name="gps.alert.title">GPS Settings</string>
     <string name="gps.alert.message">GPS is disabled. Do you want to go to settings menu?</string>
+    <string name="gps.alert.ok">Yes</string>
+    <string name="gps.alert.cancel">No</string>
 
     <!-- Common -->
     <string name="cancel">Cancel</string>

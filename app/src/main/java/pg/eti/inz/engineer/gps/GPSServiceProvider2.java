@@ -5,10 +5,15 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.Location;
+import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.LocationSource;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import lombok.Setter;
 import pg.eti.inz.engineer.data.Trip;
 import pg.eti.inz.engineer.utils.Log;
 
@@ -20,14 +25,21 @@ public class GPSServiceProvider2 {
 
     private static GPSServiceProvider2 instance;
 
-    private CoreService.GPSBinder mService;
-    private Boolean mBound = false;
+    private CoreService.GPSBinder service;
+    private AtomicBoolean isConnected;
+    @Setter
+    private Handler onConnectedHandler;
 
     public static GPSServiceProvider2 getInstance() {
         if (instance == null) {
             instance = new GPSServiceProvider2();
         }
         return instance;
+    }
+
+    GPSServiceProvider2() {
+        isConnected = new AtomicBoolean(false);
+        onConnectedHandler = null;
     }
 
     public void init(Activity context) {
@@ -40,45 +52,49 @@ public class GPSServiceProvider2 {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.d();
-            mService = (CoreService.GPSBinder) service;
-            mBound = true;
+            GPSServiceProvider2.this.service = (CoreService.GPSBinder) service;
+            isConnected.set(true);
+
+            onConnectedHandler.sendEmptyMessage(0);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
+            isConnected.set(false);
         }
     };
 
     public Location getLocation() {
-        if (mBound) {
-            return mService.getLocation();
+        if (isConnected.get()) {
+            return service.getLocation();
         } else {
             return null;
         }
     }
 
+    public Location getLastKnownLocation() { return service.getLastKnownLocation(); }
+
     public void startTracking(Trip trip) {
-        mService.startTracking(trip);
+        service.startTracking(trip);
     }
 
     public Trip stopTracking() {
-        return mService.stopTracking();
+        return service.stopTracking();
     }
 
     public boolean isTracking() {
-        return mService.isTracking();
+        return service.isTracking();
     }
 
     public Trip getTrip() {
-        return mService.getTrip();
+        return service.getTrip();
     }
 
     public LocationSource getLocationSource() {
-        return mService.getLocationSource();
+        return service.getLocationSource();
     }
 
     public CoreService.GPSStatus getGPSStatus() {
-        return mService.getGPSStatus();
+        return service.getGPSStatus();
     }
 }

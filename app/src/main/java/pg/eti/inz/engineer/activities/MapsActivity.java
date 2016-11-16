@@ -188,6 +188,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setLocationSource(GPSServiceProvider2.getInstance().getLocationSource());
+        Location lastKnownLocation = GPSServiceProvider2.getInstance().getLastKnownLocation();
+        map.animateCamera(CameraUpdateFactory.newLatLng(
+                new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude())));
         map.setOnCameraMoveStartedListener(this);
         try {
             map.setMyLocationEnabled(true);

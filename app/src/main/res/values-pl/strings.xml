@@ -25,4 +25,6 @@
     <string name="trips.finishTIme">Koniec</string>
     <string name="trips.startTime">Początek</string>
     <string name="trips">Podróże</string>
+    <string name="gps.alert.ok">Tak</string>
+    <string name="gps.alert.cancel">Nie</string>
 </resources>

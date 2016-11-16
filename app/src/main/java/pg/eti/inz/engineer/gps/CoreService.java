@@ -3,6 +3,7 @@ package pg.eti.inz.engineer.gps;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
@@ -71,6 +72,15 @@ public class CoreService extends Service implements LocationListener,
 
     public class GPSBinder extends Binder {
         public Location getLocation() { return location; }
+        public Location getLastKnownLocation() {
+            SharedPreferences sharedPreferences = getSharedPreferences("lastKnownLocation", MODE_PRIVATE);
+            double latitude = Double.parseDouble(sharedPreferences.getString("latitude", "0.0"));
+            double longitude = Double.parseDouble(sharedPreferences.getString("longitude", "0.0"));
+            Location lastKnownLocation = new Location("SharedPreferences");
+            lastKnownLocation.setLatitude(latitude);
+            lastKnownLocation.setLongitude(longitude);
+            return lastKnownLocation;
+        }
         public boolean isTracking() { return tracking; }
         public Trip getTrip() { return currTrip; }
         public LocationSource getLocationSource() { return locationSource; }
@@ -155,6 +165,11 @@ public class CoreService extends Service implements LocationListener,
         for (LocationSource.OnLocationChangedListener listener : onLocationChangedListeners) {
             listener.onLocationChanged(location);
         }
+        SharedPreferences sharedPreferences = getSharedPreferences("lastKnownLocation", MODE_PRIVATE);
+        SharedPreferences.Editor lastKnownLocationEditor = sharedPreferences.edit();
+        lastKnownLocationEditor.putString("latitude", Double.toString(location.getLatitude()));
+        lastKnownLocationEditor.putString("longitude", Double.toString(location.getLongitude()));
+        lastKnownLocationEditor.commit();
     }
 
     // LocationListener
