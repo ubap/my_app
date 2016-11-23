@@ -63,6 +63,7 @@ public class CoreService extends Service implements LocationListener,
     private boolean tracking = false;
     private Trip currTrip;
     private Location location;
+    private double avgSpeed;
     private LocationManager locationManager;
 
     private final IBinder mGPSBinder = new GPSBinder();
@@ -92,6 +93,7 @@ public class CoreService extends Service implements LocationListener,
                 return;
             }
             tracking = true;
+            avgSpeed = 0.0f;
             currTrip = trip;
         }
 
@@ -135,7 +137,7 @@ public class CoreService extends Service implements LocationListener,
                         .setContentTitle("Trackowanie drogi")
                         .setContentText("Trwa");
 
-        this.startForeground(0, notificationBuilder.build());
+        this.startForeground(1, notificationBuilder.build());
 
         return START_STICKY;
     }
@@ -153,10 +155,13 @@ public class CoreService extends Service implements LocationListener,
         Log.d(location.toString());
         statusGPS = GPSStatus.FIXED;
 
-        if(tracking) {
+        if (tracking) {
             MeasurePoint measurePoint = new MeasurePoint();
             measurePoint.setLocation(location);
-
+            // update avg speed
+            int measureCount = currTrip.getPath().size();
+            avgSpeed = ( (avgSpeed * (measureCount-1)) + location.getSpeed()) / measureCount;
+            currTrip.setAvgSpeed(avgSpeed);
             currTrip.addMeasurePoint(measurePoint);
         }
         this.location = location;

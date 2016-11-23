@@ -44,4 +44,6 @@ public class TripAdapter extends CursorAdapter {
         tripFinishTimeView.setText(tripFinishTime.toString());
         tripDistanceView.setText(String.format("%.1f", distance / 1000));
     }
+
+
 }

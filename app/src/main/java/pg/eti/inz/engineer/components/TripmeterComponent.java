@@ -69,8 +69,8 @@ public class TripmeterComponent extends LinearLayout {
             }
         };
 
-        value.setText(DEFAULT_TRIP_VALUE);
-        unit.setText(DEFAULT_UNIT);
+        value.setText(R.string.map_speedmeter_widthtemplate);
+        unit.setText(R.string.map_km);
 
         tripUpdateHandler.post(updateTrip);
     }

@@ -13,7 +13,7 @@
         tools:context="pg.eti.inz.engineer.activities.MapsActivity"
         app:uiZoomControls="false"
         app:uiZoomGestures="false"
-        app:cameraZoom="17"
+        app:cameraZoom="15"
         tools:layout="@layout/blank_layout"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"

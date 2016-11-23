@@ -2,6 +2,7 @@ package pg.eti.inz.engineer.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         GoogleMap.OnCameraMoveStartedListener {
 
     static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    static final String ACTIVITY_NAME = "MapsActivity";
 
     private GoogleMap map;
     private DbManager dbManager;
@@ -102,6 +104,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment)
+                getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("lastActivity", MODE_PRIVATE);
+        SharedPreferences.Editor lastActivityEditor = sharedPreferences.edit();
+        lastActivityEditor.putString("name", ACTIVITY_NAME);
+        lastActivityEditor.commit();
+
         startTrackingButton = (Button) findViewById(R.id.mapStartTrackingBtn);
         stopTrackingButton = (CustomImageButton) findViewById(R.id.mapStopTrackingBtn);
         followPositionButton = (CustomImageButton) findViewById(R.id.mapFollowPositionButton);
@@ -109,10 +121,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(myToolbar);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment)
-                getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         followPosition = true;
 
@@ -189,7 +197,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         map = googleMap;
         map.setLocationSource(GPSServiceProvider2.getInstance().getLocationSource());
         Location lastKnownLocation = GPSServiceProvider2.getInstance().getLastKnownLocation();
-        map.animateCamera(CameraUpdateFactory.newLatLng(
+        map.moveCamera(CameraUpdateFactory.newLatLng(
                 new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude())));
         map.setOnCameraMoveStartedListener(this);
         try {
@@ -315,10 +323,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void zoomInBtnClickHandler(View view) {
         float newZoom = map.getCameraPosition().zoom + 1.0f;
         map.animateCamera(CameraUpdateFactory.zoomTo(newZoom));
+        Log.d("new zoom level: " + Float.toString(newZoom));
     }
 
     public void zoomOutBtnClickHandler(View view) {
         float newZoom = map.getCameraPosition().zoom - 1.0f;
         map.animateCamera(CameraUpdateFactory.zoomTo(newZoom));
+        Log.d("new zoom level: " + Float.toString(newZoom));
     }
 }

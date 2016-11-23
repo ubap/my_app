@@ -53,7 +53,8 @@ public class DbManager {
                 DbHelper.TripContract.Trip._ID,
                 DbHelper.TripContract.Trip.COLUMN_NAME_START_TIME,
                 DbHelper.TripContract.Trip.COLUMN_NAME_FINISH_TIME,
-                DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE
+                DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE,
+                DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_DATA
         };
 
 // Filter results WHERE "title" = 'My Title'

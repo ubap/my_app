@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -62,6 +63,18 @@ public class MainMenuActivity extends Activity implements
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
+
+//            // switch to the last enabled activity
+//            SharedPreferences sharedPreferences = getSharedPreferences("lastActivity", MODE_PRIVATE);
+//            // by default switch to maps activity
+//            String lastActivityName = sharedPreferences.getString("name", "MapsActivity");
+//            switch (lastActivityName) {
+//                case "MapsActivity":
+//                    navigateToMap(null);
+//                    break;
+//                default:
+//                    break;
+//            }
         }
     }
     
