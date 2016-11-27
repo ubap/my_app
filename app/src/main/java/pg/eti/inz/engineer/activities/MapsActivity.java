@@ -186,6 +186,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // TODO: Handle the error.
                 }
                 return true;
+            case R.id.action_switch_to_dashboard:
+                Intent dashboardIntent = new Intent(this, DashboardActivity.class);
+                dashboardIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(dashboardIntent);
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);

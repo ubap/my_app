@@ -1,6 +1,8 @@
 package pg.eti.inz.engineer.activities;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Canvas;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -61,7 +63,15 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         rotation = new float[9];
         orientation = new float[3];
         currentDegree = 0f;
+
+
+        RelativeLayout dashboardViewLayout = (RelativeLayout) findViewById(R.id.dashboard_view_layout);
+
+
+        float density = getResources().getDisplayMetrics().density;
+        float widthDp = (float)dashboardViewLayout.getWidth() / density;
     }
+
 
     protected void onResume() {
         super.onResume();
@@ -102,6 +112,11 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                     compass.setDarkPointer();
                     tripmeter.setDarkTheme();
                 }
+                return true;
+            case R.id.action_switch_to_maps:
+                Intent mapsIntent = new Intent(this, MapsActivity.class);
+                mapsIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(mapsIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -41,6 +41,7 @@
     <string name="map.speedmeter.widthtemplate" translatable="false">00.0</string>
     <string name="map.km">KM</string>
     <string name="map.search">Search</string>
+    <string name="map.start.tracking">Start Tracking</string>
 
     <!-- Dashboard -->
     <string name="dashboard.title">Dashboard</string>
@@ -52,4 +53,7 @@
     <string name="trips.distance">Distance</string>
     <string name="trips.startTime">Start</string>
     <string name="trips.finishTIme">Finish</string>
+
+    <!-- TripView -->
+    <string name="tripView.avgSpeedLabel">Average speed:</string>
 </resources>

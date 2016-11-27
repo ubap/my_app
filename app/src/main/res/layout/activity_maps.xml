@@ -15,9 +15,9 @@
         app:uiZoomGestures="false"
         app:cameraZoom="15"
         tools:layout="@layout/blank_layout"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbar2" />
 
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
@@ -179,7 +179,7 @@
         android:onClick="followPositionBtnClickHandler" />
 
     <Button
-        android:text="Start tracking"
+        android:text="@string/map.start.tracking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/mapStartTrackingBtn"

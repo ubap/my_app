@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -17,9 +18,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.w3c.dom.Text;
+
 import java.util.LinkedList;
 import java.util.List;
 
+import lombok.libs.org.objectweb.asm.Label;
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.data.MeasurePoint;
 import pg.eti.inz.engineer.data.Trip;
@@ -40,6 +44,8 @@ public class ViewTripActivity extends AppCompatActivity implements OnMapReadyCal
         mapReady = false;
         layoutInflated = false;
         trip = (Trip) getIntent().getSerializableExtra("trip");
+        TextView averageSpeedView = (TextView) findViewById(R.id.tripViewAverageSpeedView);
+        averageSpeedView.setText(String.format("%.1f", trip.getAvgSpeed()));
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.view_trip_map);
