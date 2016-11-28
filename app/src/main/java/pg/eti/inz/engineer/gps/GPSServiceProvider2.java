@@ -1,8 +1,11 @@
 package pg.eti.inz.engineer.gps;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.Handler;
@@ -15,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.Setter;
 import pg.eti.inz.engineer.data.Trip;
+import pg.eti.inz.engineer.utils.Constants;
 import pg.eti.inz.engineer.utils.Log;
 
 /**
@@ -29,6 +33,8 @@ public class GPSServiceProvider2 {
     private AtomicBoolean isConnected;
     @Setter
     private Handler onConnectedHandler;
+    @Setter
+    private Handler onGPSStatusHandler;
 
     public static GPSServiceProvider2 getInstance() {
         if (instance == null) {
@@ -43,24 +49,36 @@ public class GPSServiceProvider2 {
     }
 
     public void init(Activity context) {
+
+        IntentFilter intentFilter = new IntentFilter(Constants.BROADCAST_ACTION_GPS_STATUS_SET);
+        context.registerReceiver(gpsStatusSetReceiver, intentFilter);
+
         Intent intent = new Intent(context, CoreService.class);
         context.bindService(intent, mConnection, 0);
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.d();
             GPSServiceProvider2.this.service = (CoreService.GPSBinder) service;
             isConnected.set(true);
-
-            onConnectedHandler.sendEmptyMessage(0);
+            if (onConnectedHandler != null) {
+                onConnectedHandler.sendEmptyMessage(0);
+            }
         }
-
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
             isConnected.set(false);
+        }
+    };
+
+    private BroadcastReceiver gpsStatusSetReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (onGPSStatusHandler != null) {
+                onGPSStatusHandler.sendEmptyMessage(0);
+            }
         }
     };
 

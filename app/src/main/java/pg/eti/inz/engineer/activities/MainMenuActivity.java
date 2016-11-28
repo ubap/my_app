@@ -39,11 +39,12 @@ public class MainMenuActivity extends Activity implements
 
     // this is invoked when the connection to the service is established
     // checks if the gps is enabled, if not then the user is prompted to enable, navigate to settings
-    class ConnectedHandler extends Handler {
+    class CheckGPSHandler extends Handler {
         Context context;
-        ConnectedHandler(Context context) { this.context = context; }
+        CheckGPSHandler(Context context) { this.context = context; }
         public void handleMessage(Message msg)
         {
+            GPSServiceProvider2.getInstance().setOnGPSStatusHandler(null);
             if (GPSServiceProvider2.getInstance().getGPSStatus() == CoreService.GPSStatus.DISABLED) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage(R.string.gps_alert_message).setTitle(R.string.gps_alert_title);
@@ -87,8 +88,7 @@ public class MainMenuActivity extends Activity implements
         startService(intent);
 
         GPSServiceProvider2.getInstance().init(this);
-        GPSServiceProvider2.getInstance().setOnConnectedHandler(new ConnectedHandler(this));
-
+        GPSServiceProvider2.getInstance().setOnGPSStatusHandler(new CheckGPSHandler(this));
     }
 
     public void navigateToSettings(View view) {

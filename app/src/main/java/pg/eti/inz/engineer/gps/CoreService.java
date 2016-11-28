@@ -23,6 +23,7 @@ import java.util.List;
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.data.MeasurePoint;
 import pg.eti.inz.engineer.data.Trip;
+import pg.eti.inz.engineer.utils.Constants;
 import pg.eti.inz.engineer.utils.Log;
 
 public class CoreService extends Service implements LocationListener,
@@ -153,7 +154,7 @@ public class CoreService extends Service implements LocationListener,
     @Override
     public void onLocationChanged(Location location) {
         Log.d(location.toString());
-        statusGPS = GPSStatus.FIXED;
+       // statusGPS = GPSStatus.FIXED;
 
         if (tracking) {
             MeasurePoint measurePoint = new MeasurePoint();
@@ -186,11 +187,15 @@ public class CoreService extends Service implements LocationListener,
     // LocationListener
     @Override
     public void onProviderEnabled(String provider) {
+        statusGPS = GPSStatus.NOT_FIXED;
+        broadcastGpsStatusChanged();
     }
 
     // LocationListener
     @Override
     public void onProviderDisabled(String provider) {
+        statusGPS = GPSStatus.DISABLED;
+        broadcastGpsStatusChanged();
     }
 
     // android.location.GpsStatus.Listener
@@ -213,5 +218,13 @@ public class CoreService extends Service implements LocationListener,
                 Log.d("error: onGpsStatusChanged unhandled status");
                 break;
         }
+        broadcastGpsStatusChanged();
+    }
+
+    private void broadcastGpsStatusChanged() {
+        Intent intent = new Intent();
+        intent.putExtra("GpsStatus", statusGPS);
+        intent.setAction(Constants.BROADCAST_ACTION_GPS_STATUS_SET);
+        sendBroadcast(intent);
     }
 }
