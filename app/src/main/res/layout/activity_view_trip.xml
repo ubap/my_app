@@ -7,18 +7,19 @@
     android:layout_height="match_parent"
     tools:context="pg.eti.inz.engineer.activities.ViewTripActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:theme="?attr/actionBarTheme"
+        android:minHeight="?attr/actionBarSize"
+        android:id="@+id/tripViewToolbar" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v7.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:theme="?attr/actionBarTheme"
-            android:minHeight="?attr/actionBarSize"
-            android:id="@+id/toolbar4" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tripViewToolbar">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -35,20 +36,45 @@
                     android:name="com.google.android.gms.maps.MapFragment"
                     android:id="@+id/view_trip_map"
                     android:layout_width="match_parent"
+                    android:layout_height="400dp"
                     app:cameraZoom="17"
-                    android:layout_height="400dp" />
+                    app:uiZoomGestures="false"
+                    app:uiScrollGestures="false"
+                    app:uiRotateGestures="false"
+                    app:uiTiltGestures="false"
+                    />
 
                 <TextView
-                    android:text="@string/tripView.avgSpeedLabel"
+                    android:text="@string/tripView.distanceLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tripViewAverageSpeedLabel" />
+                    android:id="@+id/tripViewDistanceLabel"
+                    android:textSize="@dimen/tripView.LabelTextSize"
+                    android:textAlignment="center" />
 
                 <TextView
                     android:text="TextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tripViewAverageSpeedView" />
+                    android:id="@+id/tripViewDistanceView"
+                    android:textSize="@dimen/tripView.ViewTextSize"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:text="@string/tripView.avgSpeedLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tripViewAverageSpeedLabel"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/tripView.LabelTextSize" />
+
+                <TextView
+                    android:text="TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tripViewAverageSpeedView"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/tripView.ViewTextSize" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

@@ -5,6 +5,8 @@ import android.location.Location;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
@@ -30,6 +32,8 @@ import pg.eti.inz.engineer.data.Trip;
 
 public class ViewTripActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private final Double SPEED_FACTOR = 3.6;
+
     private Trip trip;
     private GoogleMap map;
 
@@ -40,12 +44,18 @@ public class ViewTripActivity extends AppCompatActivity implements OnMapReadyCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_trip);
+        Toolbar tripViewToolbar = (Toolbar) findViewById(R.id.tripViewToolbar);
+        tripViewToolbar.setNavigationIcon(R.drawable.ic_add_black_48dp);
+        setSupportActionBar(tripViewToolbar);
 
         mapReady = false;
         layoutInflated = false;
         trip = (Trip) getIntent().getSerializableExtra("trip");
         TextView averageSpeedView = (TextView) findViewById(R.id.tripViewAverageSpeedView);
-        averageSpeedView.setText(String.format("%.1f", trip.getAvgSpeed()));
+        averageSpeedView.setText(String.format("%.1f", trip.getAvgSpeed() * SPEED_FACTOR));
+
+        TextView distanceView = (TextView) findViewById(R.id.tripViewDistanceView);
+        distanceView.setText(String.format("%.1f", trip.getDistance() / 1000));
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.view_trip_map);
@@ -76,6 +86,12 @@ public class ViewTripActivity extends AppCompatActivity implements OnMapReadyCal
         if (mapReady && layoutInflated) {
             zoomCameraToPath(trip.getPath());
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
     }
 
     private void zoomCameraToPath(List<MeasurePoint> path) {

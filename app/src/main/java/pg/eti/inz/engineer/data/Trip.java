@@ -44,7 +44,7 @@ public class Trip implements java.io.Serializable {
         startTime = new Time(cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.TripContract.Trip.COLUMN_NAME_START_TIME)));
         finishTime = new Time(cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.TripContract.Trip.COLUMN_NAME_FINISH_TIME)));
         distance = cursor.getFloat(cursor.getColumnIndexOrThrow(DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE));
-
+        avgSpeed = cursor.getFloat(cursor.getColumnIndexOrThrow(DbHelper.TripContract.Trip.COLUMN_NAME_AVG_SPEED));
 
         byte[] tripBytes = cursor.getBlob(cursor.getColumnIndexOrThrow(DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_DATA));
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(tripBytes);

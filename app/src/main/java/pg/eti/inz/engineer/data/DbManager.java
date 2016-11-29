@@ -30,6 +30,7 @@ public class DbManager {
         values.put(DbHelper.TripContract.Trip.COLUMN_NAME_START_TIME, trip.getStartTime().getTime());
         values.put(DbHelper.TripContract.Trip.COLUMN_NAME_FINISH_TIME, trip.getFinishTime().getTime());
         values.put(DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE, trip.getDistance());
+        values.put(DbHelper.TripContract.Trip.COLUMN_NAME_AVG_SPEED, trip.getAvgSpeed());
 
         List<MeasurePoint> path = trip.getPath();
 
@@ -54,6 +55,7 @@ public class DbManager {
                 DbHelper.TripContract.Trip.COLUMN_NAME_START_TIME,
                 DbHelper.TripContract.Trip.COLUMN_NAME_FINISH_TIME,
                 DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE,
+                DbHelper.TripContract.Trip.COLUMN_NAME_AVG_SPEED,
                 DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_DATA
         };
 

@@ -13,7 +13,7 @@ import pg.eti.inz.engineer.utils.Log;
 
 public class DbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
     public static final String DATABASE_NAME = "BikeDashboard.db";
 
     public DbHelper(Context context) {
@@ -31,6 +31,7 @@ public class DbHelper extends SQLiteOpenHelper {
             public static final String COLUMN_NAME_START_TIME = "start_time";
             public static final String COLUMN_NAME_FINISH_TIME = "finish_time";
             public static final String COLUMN_NAME_DISTANCE = "distance";
+            public static final String COLUMN_NAME_AVG_SPEED = "avg_speed";
             public static final String COLUMN_NAME_TRIP_DATA = "trip_data";
         }
 
@@ -45,6 +46,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     TripContract.Trip.COLUMN_NAME_START_TIME + TEXT_TYPE + COMMA_SEP +
                     TripContract.Trip.COLUMN_NAME_FINISH_TIME + TEXT_TYPE + COMMA_SEP +
                     TripContract.Trip.COLUMN_NAME_TRIP_DATA + BLOB_TYPE + COMMA_SEP +
+                    TripContract.Trip.COLUMN_NAME_AVG_SPEED + TEXT_TYPE + COMMA_SEP +
                     TripContract.Trip.COLUMN_NAME_DISTANCE + TEXT_TYPE + " )";
 
     private static final String SQL_DELETE_ENTRIES =

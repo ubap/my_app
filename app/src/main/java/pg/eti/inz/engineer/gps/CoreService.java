@@ -159,11 +159,11 @@ public class CoreService extends Service implements LocationListener,
         if (tracking) {
             MeasurePoint measurePoint = new MeasurePoint();
             measurePoint.setLocation(location);
+            currTrip.addMeasurePoint(measurePoint);
             // update avg speed
             int measureCount = currTrip.getPath().size();
             avgSpeed = ( (avgSpeed * (measureCount-1)) + location.getSpeed()) / measureCount;
             currTrip.setAvgSpeed(avgSpeed);
-            currTrip.addMeasurePoint(measurePoint);
         }
         this.location = location;
 

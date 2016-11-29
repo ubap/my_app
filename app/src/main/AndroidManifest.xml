@@ -28,6 +28,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <service
+            android:name=".gps.CoreService"
+            android:enabled="true" />
 
         <activity
             android:name=".activities.MainMenuActivity"
@@ -49,12 +52,11 @@
             android:label="@string/dashboard.title"
             android:noHistory="true"/>
 
-        <service
-            android:name=".gps.CoreService"
-            android:enabled="true" />
-
-        <activity android:name=".activities.TripsActivity" />
-        <activity android:name=".activities.ViewTripActivity"></activity>
+        <activity
+            android:name=".activities.TripsActivity" />
+        <activity
+            android:name=".activities.ViewTripActivity"
+            android:label="@string/tripView.activityName"/>
     </application>
 
 </manifest>
