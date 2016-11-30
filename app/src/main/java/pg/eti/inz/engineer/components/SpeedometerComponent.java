@@ -9,28 +9,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import pg.eti.inz.engineer.R;
+import pg.eti.inz.engineer.components.base.SwitchThemeComponent;
+import pg.eti.inz.engineer.components.base.RefreshableComponent;
 import pg.eti.inz.engineer.gps.GPSServiceProvider2;
 
-public class SpeedometerComponent extends LinearLayout {
+public class SpeedometerComponent extends LinearLayout implements RefreshableComponent, SwitchThemeComponent {
 
     private final String DEFAULT_UNIT = getContext().getString(R.string.map_kmph);
-    private final String DEFAULT_SPEED_VALUE = "0.0";
+    private final String DEFAULT_SPEED_VALUE = getContext().getString(R.string.map_speedmeter_widthtemplate);
     private final Integer UPDATE_DELAY = 1000;
     private final Double SPEED_FACTOR = 3.6;
+    public final static int SIZE_RATIO_X = 2;
+    public final static int SIZE_RATIO_Y = 1;
 
     private TextView value;
     private TextView unit;
-    private Runnable updateSpeed;
-    private Handler speedUpdateHandler;
 
     public SpeedometerComponent (Context context) {
-        super(context);
-        init(context);
+        this(context, null);
     }
 
     public SpeedometerComponent (Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+        this(context, null, 0);
     }
 
     public SpeedometerComponent (Context context, AttributeSet attrs, int defStyleAttr) {
@@ -48,29 +48,22 @@ public class SpeedometerComponent extends LinearLayout {
         unit.setTextColor(getResources().getColor(R.color.black));
     }
 
-    private void init (Context context) {
-        View.inflate(context, R.layout.speedometer, this);
+    private void init(Context context) {
+        View.inflate(context, R.layout.speedometer_customizable, this);
+        value = (TextView) findViewById(R.id.speedometer_customizable_speed_value);
+        unit = (TextView) findViewById(R.id.speedometer_customizable_speed_unit);
+
         setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
-
-        value = (TextView) findViewById(R.id.speedometer_speed_value);
-        unit = (TextView) findViewById(R.id.speedometer_speed_unit);
-        speedUpdateHandler = new Handler();
-
-        updateSpeed = new Runnable() {
-            @Override
-            public void run() {
-                Location location = GPSServiceProvider2.getInstance().getLocation();
-                if (location != null) {
-                    String speed = String.format("%.1f", location.getSpeed() * SPEED_FACTOR);
-                    value.setText(speed);
-                }
-                speedUpdateHandler.postDelayed(this, UPDATE_DELAY);
-            }
-        };
 
         value.setText(DEFAULT_SPEED_VALUE);
         unit.setText(DEFAULT_UNIT);
+    }
 
-        speedUpdateHandler.post(updateSpeed);
+    public void update() {
+        Location location = GPSServiceProvider2.getInstance().getLocation();
+        if (location != null) {
+            String speed = String.format("%.1f", location.getSpeed() * SPEED_FACTOR);
+            value.setText(speed);
+        }
     }
 }

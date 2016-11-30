@@ -58,4 +58,5 @@
     <string name="tripView.activityName">Trip info</string>
     <string name="tripView.avgSpeedLabel">Average speed</string>
     <string name="tripView.distanceLabel">Distance</string>
+
 </resources>

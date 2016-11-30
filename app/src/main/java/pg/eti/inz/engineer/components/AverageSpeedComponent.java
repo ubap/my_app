@@ -1,7 +1,6 @@
 package pg.eti.inz.engineer.components;
 
 import android.content.Context;
-import android.location.Location;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.DragEvent;
@@ -49,11 +48,12 @@ public class AverageSpeedComponent extends LinearLayout {
 
         setOnDragListener(onDragListener);
 
-        View.inflate(context, R.layout.speedometer, this);
+        View.inflate(context, R.layout.speedometer_customizable, this);
         setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
 
-        value = (TextView) findViewById(R.id.speedometer_speed_value);
-        unit = (TextView) findViewById(R.id.speedometer_speed_unit);
+
+        value = (TextView) findViewById(R.id.speedometer_customizable_speed_value);
+        unit = (TextView) findViewById(R.id.speedometer_customizable_speed_unit);
         speedUpdateHandler = new Handler();
 
         updateSpeed = new Runnable() {

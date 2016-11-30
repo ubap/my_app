@@ -2,33 +2,40 @@ package pg.eti.inz.engineer.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.RelativeLayout;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import pg.eti.inz.engineer.R;
-import pg.eti.inz.engineer.components.CompassComponent;
-import pg.eti.inz.engineer.components.SpeedometerComponent;
-import pg.eti.inz.engineer.components.TripmeterComponent;
+import pg.eti.inz.engineer.components.base.DashboardComponent;
+import pg.eti.inz.engineer.components.base.RefreshableComponent;
+import pg.eti.inz.engineer.components.base.SwitchThemeComponent;
+import pg.eti.inz.engineer.utils.Util;
 
 /**
  * Klasa obslugujaca aktywnosc zawierajaca liczniki i wskazniki
  */
-public class DashboardActivity extends AppCompatActivity implements SensorEventListener {
+public class DashboardActivity extends AppCompatActivity implements SensorEventListener, PopupMenu.OnMenuItemClickListener {
 
     private RelativeLayout dashboardLayout;
-    private SpeedometerComponent speedometer;
-    private CompassComponent compass;
-    private TripmeterComponent tripmeter;
+//    private SpeedometerComponent speedometer_customizable;
+//    private CompassComponent compass;
+//    private TripmeterComponent tripmeter;
     private Boolean isNightMode = Boolean.FALSE;
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -41,6 +48,12 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     private float[] orientation;
     private float currentDegree;
 
+    private Handler handler;
+    private Runnable runnable;
+
+    private List<View> components;
+    private RelativeLayout dashboardViewLayout;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +62,11 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         Toolbar myToolbar = (Toolbar) findViewById(R.id.dashboard_toolbar);
         setSupportActionBar(myToolbar);
 
-        dashboardLayout = (RelativeLayout) findViewById(R.id.dashboard_layout);
-        speedometer = (SpeedometerComponent) findViewById(R.id.dashboard_speedometer);
-        compass = (CompassComponent) findViewById(R.id.dashboard_compass);
-        tripmeter = (TripmeterComponent) findViewById(R.id.dashboard_trip_meter);
+         dashboardLayout = (RelativeLayout) findViewById(R.id.dashboard_layout);
+//        speedometer_customizable = (SpeedometerComponent) findViewById(R.id.dashboard_speedometer);
+//        compass = (CompassComponent) findViewById(R.id.dashboard_compass);
+//        tripmeter = (TripmeterComponent) findViewById(R.id.dashboard_trip_meter);
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -64,12 +78,30 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         orientation = new float[3];
         currentDegree = 0f;
 
+        dashboardViewLayout = (RelativeLayout) findViewById(R.id.dashboard_view_layout);
+        components = new LinkedList<>();
 
-        RelativeLayout dashboardViewLayout = (RelativeLayout) findViewById(R.id.dashboard_view_layout);
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                for (View component : components) {
+                    if (component instanceof RefreshableComponent) {
+                        ((RefreshableComponent) component).update();
+                    }
+                }
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.post(runnable);
+    }
 
-
-        float density = getResources().getDisplayMetrics().density;
-        float widthDp = (float)dashboardViewLayout.getWidth() / density;
+    public void addNewComponent(View view) {
+        PopupMenu popup = new PopupMenu(this, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.dashboard_add_components, popup.getMenu());
+        popup.setOnMenuItemClickListener(this);
+        popup.show();
     }
 
 
@@ -83,6 +115,22 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         super.onPause();
         sensorManager.unregisterListener(this, accelerometer);
         sensorManager.unregisterListener(this, magnetometer);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.dashboard_menu_add_speedometer:
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(Util.pxFromDp(this, 32*4), Util.pxFromDp(this, 32*2));
+                params.topMargin = Util.pxFromDp(getApplicationContext(), 0);
+                params.leftMargin = Util.pxFromDp(getApplicationContext(), 0);
+                DashboardComponent dashboardComponent = new DashboardComponent(dashboardViewLayout.getContext(), params, true);
+                components.add(dashboardComponent);
+                dashboardViewLayout.addView(dashboardComponent);
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -100,17 +148,27 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                 if (!isNightMode) {
                     item.setIcon(R.drawable.ic_brightness_5_black_48dp);
                     isNightMode = Boolean.TRUE;
-                    dashboardLayout.setBackgroundColor(getResources().getColor(R.color.black));
-                    speedometer.setBrightTheme();
-                    compass.setBrightPointer();
-                    tripmeter.setBrightTheme();
+                    dashboardViewLayout.setBackgroundColor(getResources().getColor(R.color.black));
+                    for (View component : components) {
+                        if (component instanceof SwitchThemeComponent) {
+                            ((SwitchThemeComponent) component).setBrightTheme();
+                        }
+                        if (component instanceof RefreshableComponent) {
+                            ((RefreshableComponent) component).update();
+                        }
+                    }
                 } else {
                     item.setIcon(R.drawable.ic_brightness_3_black_48dp);
                     isNightMode = Boolean.FALSE;
-                    dashboardLayout.setBackgroundColor(getResources().getColor(R.color.white));
-                    speedometer.setDarkTheme();
-                    compass.setDarkPointer();
-                    tripmeter.setDarkTheme();
+                    dashboardViewLayout.setBackgroundResource(0);
+                    for (View component : components) {
+                        if (component instanceof SwitchThemeComponent) {
+                            ((SwitchThemeComponent) component).setDarkTheme();
+                        }
+                        if (component instanceof RefreshableComponent) {
+                            ((RefreshableComponent) component).update();
+                        }
+                    }
                 }
                 return true;
             case R.id.action_switch_to_maps:
@@ -139,9 +197,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
 
             float azimuthInRadians = orientation[0];
             float azimuthInDegrees = (float) (Math.toDegrees(azimuthInRadians) + 360) % 360;
-
-            compass.rotatePointer(currentDegree, azimuthInDegrees);
-
+//            compass.rotatePointer(currentDegree, azimuthInDegrees);
             currentDegree = -azimuthInDegrees;
         }
     }
