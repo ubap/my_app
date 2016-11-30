@@ -2,6 +2,7 @@ package pg.eti.inz.engineer.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.data.DbManager;
+import pg.eti.inz.engineer.data.MeasurePoint;
 import pg.eti.inz.engineer.data.Trip;
 import pg.eti.inz.engineer.gps.CoreService;
 import pg.eti.inz.engineer.gps.GPSServiceProvider2;
@@ -42,9 +44,10 @@ import pg.eti.inz.engineer.components.CustomImageButton;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,
         GoogleMap.OnCameraMoveStartedListener {
 
-    final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    static final String ACTIVITY_NAME = "MapsActivity";
 
-    private GoogleMap mMap;
+    private GoogleMap map;
     private DbManager dbManager;
     private TextView speedMeter;
     private TextView tripMeter;
@@ -54,7 +57,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button startTrackingButton;
     private LinearLayout speedMeterLayout;
 
-    private boolean followPosition = true;
+    private boolean followPosition;
     private Polyline pathPolyLine;
 
     private Handler handler = new Handler();
@@ -82,7 +85,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // update camera position
                 if (followPosition) {
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                    map.animateCamera(CameraUpdateFactory.newLatLng(latLng));
                 }
                 updateSpeedMeter(location.getSpeed());
                 if (GPSService.isTracking()) {
@@ -101,6 +104,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment)
+                getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("lastActivity", MODE_PRIVATE);
+        SharedPreferences.Editor lastActivityEditor = sharedPreferences.edit();
+        lastActivityEditor.putString("name", ACTIVITY_NAME);
+        lastActivityEditor.commit();
+
         startTrackingButton = (Button) findViewById(R.id.mapStartTrackingBtn);
         stopTrackingButton = (CustomImageButton) findViewById(R.id.mapStopTrackingBtn);
         followPositionButton = (CustomImageButton) findViewById(R.id.mapFollowPositionButton);
@@ -108,10 +121,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(myToolbar);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment)
-                getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
+        followPosition = true;
 
         // initial visible buttons
         if (GPSServiceProvider2.getInstance().isTracking()) {
@@ -126,6 +137,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    protected void onDestroy() {
+        if (dbManager != null) {
+            dbManager.closeConnection();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
@@ -133,7 +152,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 updateFollowPositionButton(false);
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                map.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 Log.i(place.getName().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
@@ -167,6 +186,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // TODO: Handle the error.
                 }
                 return true;
+            case R.id.action_switch_to_dashboard:
+                Intent dashboardIntent = new Intent(this, DashboardActivity.class);
+                dashboardIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(dashboardIntent);
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -175,12 +199,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.setLocationSource(GPSServiceProvider2.getInstance().getLocationSource());
-        mMap.setOnCameraMoveStartedListener(this);
+        map = googleMap;
+        map.setLocationSource(GPSServiceProvider2.getInstance().getLocationSource());
+        Location lastKnownLocation = GPSServiceProvider2.getInstance().getLastKnownLocation();
+        map.moveCamera(CameraUpdateFactory.newLatLng(
+                new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude())));
+        map.setOnCameraMoveStartedListener(this);
         try {
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            map.setMyLocationEnabled(true);
+            map.getUiSettings().setMyLocationButtonEnabled(false);
         } catch (SecurityException e) {
             e.printStackTrace();
         }
@@ -210,17 +237,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void drawPath(List<Location> path) {
+    private void drawPath(List<MeasurePoint> path) {
         if (pathPolyLine == null) {
             PolylineOptions polylineOptions = new PolylineOptions();
-            for (Location location : path) {
-                polylineOptions.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            for (MeasurePoint measure : path) {
+                polylineOptions.add(new LatLng(measure.getLatitude(), measure.getLongitude()));
             }
-            pathPolyLine = mMap.addPolyline(polylineOptions.width(5).color(Color.RED));
+            pathPolyLine = map.addPolyline(polylineOptions.width(5).color(Color.RED));
         } else {
             List<LatLng> latLngList = new LinkedList<>();
-            for (Location location : path) {
-                latLngList.add(new LatLng(location.getLatitude(), location.getLongitude()));
+            for (MeasurePoint measure : path) {
+                latLngList.add(new LatLng(measure.getLatitude(), measure.getLongitude()));
             }
             pathPolyLine.setPoints(latLngList);
         }
@@ -299,12 +326,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void zoomInBtnClickHandler(View view) {
-        float newZoom = mMap.getCameraPosition().zoom + 1.0f;
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(newZoom));
+        float newZoom = map.getCameraPosition().zoom + 1.0f;
+        map.animateCamera(CameraUpdateFactory.zoomTo(newZoom));
+        Log.d("new zoom level: " + Float.toString(newZoom));
     }
 
     public void zoomOutBtnClickHandler(View view) {
-        float newZoom = mMap.getCameraPosition().zoom - 1.0f;
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(newZoom));
+        float newZoom = map.getCameraPosition().zoom - 1.0f;
+        map.animateCamera(CameraUpdateFactory.zoomTo(newZoom));
+        Log.d("new zoom level: " + Float.toString(newZoom));
     }
 }

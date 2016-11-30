@@ -12,14 +12,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/speedometer_speed_value"
+            android:id="@+id/tripMeterTripView"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_gravity="center_horizontal"
             android:textSize="72sp" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/speedometer_speed_unit"
+            android:id="@+id/tripMeterUnitView"
             style="@style/TextAppearance.AppCompat.Small"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>

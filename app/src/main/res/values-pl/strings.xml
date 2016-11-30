@@ -24,4 +24,11 @@
     <string name="trips.distance">Odległość</string>
     <string name="trips.finishTIme">Koniec</string>
     <string name="trips.startTime">Początek</string>
+    <string name="trips">Podróże</string>
+    <string name="gps.alert.ok">Tak</string>
+    <string name="gps.alert.cancel">Nie</string>
+    <string name="map.start.tracking">Rozpocznij śledzenie</string>
+    <string name="tripView.avgSpeedLabel">Średnia prędkość</string>
+    <string name="tripView.distanceLabel">Dystans</string>
+    <string name="tripView.activityName">Podróż</string>
 </resources>

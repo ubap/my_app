@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_search_black_48dp"
         android:title="@string/map.search"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_switch_to_dashboard"
+        android:icon="@drawable/gauge_256"
+        android:title="@string/map.search"
+        app:showAsAction="ifRoom"/>
 </menu>

@@ -1,9 +1,15 @@
 package pg.eti.inz.engineer.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -31,15 +37,58 @@ import pg.eti.inz.engineer.utils.Log;
 public class MainMenuActivity extends Activity implements
         ResultCallback<LocationSettingsResult> {
 
+    // this is invoked when the connection to the service is established
+    // checks if the gps is enabled, if not then the user is prompted to enable, navigate to settings
+    class CheckGPSHandler extends Handler {
+        Context context;
+        CheckGPSHandler(Context context) { this.context = context; }
+        public void handleMessage(Message msg)
+        {
+            GPSServiceProvider2.getInstance().setOnGPSStatusHandler(null);
+            if (GPSServiceProvider2.getInstance().getGPSStatus() == CoreService.GPSStatus.DISABLED) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage(R.string.gps_alert_message).setTitle(R.string.gps_alert_title);
+
+                builder.setPositiveButton(R.string.gps_alert_ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+                        Intent gpsOptionsIntent = new Intent(
+                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(gpsOptionsIntent);
+                    }
+                });
+                builder.setNegativeButton(R.string.gps_alert_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+
+//            // switch to the last enabled activity
+//            SharedPreferences sharedPreferences = getSharedPreferences("lastActivity", MODE_PRIVATE);
+//            // by default switch to maps activity
+//            String lastActivityName = sharedPreferences.getString("name", "MapsActivity");
+//            switch (lastActivityName) {
+//                case "MapsActivity":
+//                    navigateToMap(null);
+//                    break;
+//                default:
+//                    break;
+//            }
+        }
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu_layout);
 
-        GPSServiceProvider2.getInstance().init(this);
-
         Intent intent = new Intent(this, CoreService.class);
         startService(intent);
+
+        GPSServiceProvider2.getInstance().init(this);
+        GPSServiceProvider2.getInstance().setOnGPSStatusHandler(new CheckGPSHandler(this));
     }
 
     public void navigateToSettings(View view) {

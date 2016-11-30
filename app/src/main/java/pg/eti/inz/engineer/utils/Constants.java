@@ -16,5 +16,8 @@ public class Constants {
     //Settings keys
     public static final String SETTINGS_GPS_USE_NETWORK_KEY = "useNetwork";
 
+    // SERVICE
+    public static final String BROADCAST_ACTION_GPS_STATUS_SET = "BROADCAST_ACTION_GPS_STATUS_SET";
+
     private Constants() {}
 }

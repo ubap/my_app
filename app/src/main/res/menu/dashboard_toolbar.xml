@@ -11,8 +11,14 @@
                 android:title="@string/dashboard.add.speedometer" />
         </menu>
     </item>-->
+
     <item android:id="@+id/dashboard_brightness"
         android:icon="@drawable/ic_brightness_3_black_48dp"
         android:title="@string/dashboard.switchBrightness"
         app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/action_switch_to_maps"
+        android:icon="@drawable/map_256"
+        android:title="@string/map.search"
+        app:showAsAction="ifRoom"/>
 </menu>

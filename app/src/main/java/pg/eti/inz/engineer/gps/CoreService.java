@@ -3,6 +3,8 @@ package pg.eti.inz.engineer.gps;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,10 +21,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import pg.eti.inz.engineer.R;
+import pg.eti.inz.engineer.data.MeasurePoint;
 import pg.eti.inz.engineer.data.Trip;
+import pg.eti.inz.engineer.utils.Constants;
 import pg.eti.inz.engineer.utils.Log;
 
-public class CoreService extends Service implements LocationListener {
+public class CoreService extends Service implements LocationListener,
+        GpsStatus.Listener {
 
 //    private Handler handler = new Handler();
 //    private Runnable runnable = new Runnable() {
@@ -59,6 +64,8 @@ public class CoreService extends Service implements LocationListener {
     private boolean tracking = false;
     private Trip currTrip;
     private Location location;
+    private double avgSpeed;
+    private LocationManager locationManager;
 
     private final IBinder mGPSBinder = new GPSBinder();
 
@@ -67,6 +74,15 @@ public class CoreService extends Service implements LocationListener {
 
     public class GPSBinder extends Binder {
         public Location getLocation() { return location; }
+        public Location getLastKnownLocation() {
+            SharedPreferences sharedPreferences = getSharedPreferences("lastKnownLocation", MODE_PRIVATE);
+            double latitude = Double.parseDouble(sharedPreferences.getString("latitude", "0.0"));
+            double longitude = Double.parseDouble(sharedPreferences.getString("longitude", "0.0"));
+            Location lastKnownLocation = new Location("SharedPreferences");
+            lastKnownLocation.setLatitude(latitude);
+            lastKnownLocation.setLongitude(longitude);
+            return lastKnownLocation;
+        }
         public boolean isTracking() { return tracking; }
         public Trip getTrip() { return currTrip; }
         public LocationSource getLocationSource() { return locationSource; }
@@ -78,6 +94,7 @@ public class CoreService extends Service implements LocationListener {
                 return;
             }
             tracking = true;
+            avgSpeed = 0.0f;
             currTrip = trip;
         }
 
@@ -92,6 +109,7 @@ public class CoreService extends Service implements LocationListener {
     // Service
     @Override
     public void onCreate() {
+        locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
     }
 
     // Service
@@ -107,12 +125,11 @@ public class CoreService extends Service implements LocationListener {
 
         // start gps listener
         // TODO: Check if registering a location listener for second time won't break anything and is OK
-        LocationManager locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            locationManager.addGpsStatusListener(this);
         }
         catch (SecurityException e) { e.printStackTrace(); }
-
 
         // make this service as a foreground one
         NotificationCompat.Builder notificationBuilder =
@@ -121,7 +138,7 @@ public class CoreService extends Service implements LocationListener {
                         .setContentTitle("Trackowanie drogi")
                         .setContentText("Trwa");
 
-        this.startForeground(0, notificationBuilder.build());
+        this.startForeground(1, notificationBuilder.build());
 
         return START_STICKY;
     }
@@ -137,10 +154,16 @@ public class CoreService extends Service implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Log.d(location.toString());
-        statusGPS = GPSStatus.FIXED;
+       // statusGPS = GPSStatus.FIXED;
 
-        if(tracking) {
-            currTrip.addLocation(location);
+        if (tracking) {
+            MeasurePoint measurePoint = new MeasurePoint();
+            measurePoint.setLocation(location);
+            currTrip.addMeasurePoint(measurePoint);
+            // update avg speed
+            int measureCount = currTrip.getPath().size();
+            avgSpeed = ( (avgSpeed * (measureCount-1)) + location.getSpeed()) / measureCount;
+            currTrip.setAvgSpeed(avgSpeed);
         }
         this.location = location;
 
@@ -148,6 +171,11 @@ public class CoreService extends Service implements LocationListener {
         for (LocationSource.OnLocationChangedListener listener : onLocationChangedListeners) {
             listener.onLocationChanged(location);
         }
+        SharedPreferences sharedPreferences = getSharedPreferences("lastKnownLocation", MODE_PRIVATE);
+        SharedPreferences.Editor lastKnownLocationEditor = sharedPreferences.edit();
+        lastKnownLocationEditor.putString("latitude", Double.toString(location.getLatitude()));
+        lastKnownLocationEditor.putString("longitude", Double.toString(location.getLongitude()));
+        lastKnownLocationEditor.commit();
     }
 
     // LocationListener
@@ -159,14 +187,44 @@ public class CoreService extends Service implements LocationListener {
     // LocationListener
     @Override
     public void onProviderEnabled(String provider) {
-        Log.d();
         statusGPS = GPSStatus.NOT_FIXED;
+        broadcastGpsStatusChanged();
     }
 
     // LocationListener
     @Override
     public void onProviderDisabled(String provider) {
-        Log.d();
         statusGPS = GPSStatus.DISABLED;
+        broadcastGpsStatusChanged();
+    }
+
+    // android.location.GpsStatus.Listener
+    @Override
+    public void onGpsStatusChanged(int event) {
+        switch (event) {
+            case GpsStatus.GPS_EVENT_STARTED:
+                statusGPS = GPSStatus.NOT_FIXED;
+                break;
+            case GpsStatus.GPS_EVENT_FIRST_FIX:
+                statusGPS = GPSStatus.FIXED;
+                break;
+            case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+                // count satelites?
+                break;
+            case GpsStatus.GPS_EVENT_STOPPED:
+                statusGPS = GPSStatus.DISABLED;
+                break;
+            default:
+                Log.d("error: onGpsStatusChanged unhandled status");
+                break;
+        }
+        broadcastGpsStatusChanged();
+    }
+
+    private void broadcastGpsStatusChanged() {
+        Intent intent = new Intent();
+        intent.putExtra("GpsStatus", statusGPS);
+        intent.setAction(Constants.BROADCAST_ACTION_GPS_STATUS_SET);
+        sendBroadcast(intent);
     }
 }
