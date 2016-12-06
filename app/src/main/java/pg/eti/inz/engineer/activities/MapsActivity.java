@@ -198,6 +198,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    public void onBackPressed()
+    {
+        Intent mainMenuActivity = new Intent(this, MainMenuActivity.class);
+        mainMenuActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainMenuActivity);
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setLocationSource(GPSServiceProvider.getInstance().getLocationSource());

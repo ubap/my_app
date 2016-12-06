@@ -183,6 +183,14 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     }
 
     @Override
+    public void onBackPressed()
+    {
+        Intent mainMenuActivity = new Intent(this, MainMenuActivity.class);
+        mainMenuActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainMenuActivity);
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor == accelerometer) {
             System.arraycopy(sensorEvent.values, 0, lastAccelerometerMeasure, 0, sensorEvent.values.length);
