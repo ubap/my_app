@@ -22,10 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import pg.eti.inz.engineer.R;
-import pg.eti.inz.engineer.components.base.DashboardComponent;
-import pg.eti.inz.engineer.components.base.RefreshableComponent;
-import pg.eti.inz.engineer.components.base.SwitchThemeComponent;
-import pg.eti.inz.engineer.utils.Util;
+import pg.eti.inz.engineer.components.indicators.base.DashboardComponentFactory;
+import pg.eti.inz.engineer.components.indicators.base.RefreshableComponent;
+import pg.eti.inz.engineer.components.indicators.base.SwitchThemeComponent;
 
 /**
  * Klasa obslugujaca aktywnosc zawierajaca liczniki i wskazniki
@@ -33,7 +32,7 @@ import pg.eti.inz.engineer.utils.Util;
 public class DashboardActivity extends AppCompatActivity implements SensorEventListener, PopupMenu.OnMenuItemClickListener {
 
     private RelativeLayout dashboardLayout;
-//    private SpeedometerComponent speedometer_customizable;
+//    private SpeedometerComponent speedmeter_component;
 //    private CompassComponent compass;
 //    private TripmeterComponent tripmeter;
     private Boolean isNightMode = Boolean.FALSE;
@@ -63,7 +62,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         setSupportActionBar(myToolbar);
 
          dashboardLayout = (RelativeLayout) findViewById(R.id.dashboard_layout);
-//        speedometer_customizable = (SpeedometerComponent) findViewById(R.id.dashboard_speedometer);
+//        speedmeter_component = (SpeedometerComponent) findViewById(R.id.dashboard_speedometer);
 //        compass = (CompassComponent) findViewById(R.id.dashboard_compass);
 //        tripmeter = (TripmeterComponent) findViewById(R.id.dashboard_trip_meter);
 
@@ -119,18 +118,20 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        View component;
         switch (item.getItemId()) {
             case R.id.dashboard_menu_add_speedometer:
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(Util.pxFromDp(this, 32*4), Util.pxFromDp(this, 32*2));
-                params.topMargin = Util.pxFromDp(getApplicationContext(), 0);
-                params.leftMargin = Util.pxFromDp(getApplicationContext(), 0);
-                DashboardComponent dashboardComponent = new DashboardComponent(dashboardViewLayout.getContext(), params, true);
-                components.add(dashboardComponent);
-                dashboardViewLayout.addView(dashboardComponent);
-                return true;
+                component = DashboardComponentFactory.createSpeedmeterComponent(this);
+                break;
+            case R.id.dashboard_menu_add_tripmeter:
+                component = DashboardComponentFactory.createTripmeterComponent(this);
+                break;
             default:
                 return false;
         }
+        components.add(component);
+        dashboardViewLayout.addView(component);
+        return true;
     }
 
     @Override

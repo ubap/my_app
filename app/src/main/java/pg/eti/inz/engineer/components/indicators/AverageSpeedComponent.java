@@ -1,4 +1,4 @@
-package pg.eti.inz.engineer.components;
+package pg.eti.inz.engineer.components.indicators;
 
 import android.content.Context;
 import android.os.Handler;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.data.Trip;
-import pg.eti.inz.engineer.gps.GPSServiceProvider2;
+import pg.eti.inz.engineer.gps.GPSServiceProvider;
 import pg.eti.inz.engineer.utils.Log;
 
 public class AverageSpeedComponent extends LinearLayout {
@@ -48,7 +48,7 @@ public class AverageSpeedComponent extends LinearLayout {
 
         setOnDragListener(onDragListener);
 
-        View.inflate(context, R.layout.speedometer_customizable, this);
+        View.inflate(context, R.layout.speedmeter_component, this);
         setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
 
 
@@ -59,7 +59,7 @@ public class AverageSpeedComponent extends LinearLayout {
         updateSpeed = new Runnable() {
             @Override
             public void run() {
-                Trip trip = GPSServiceProvider2.getInstance().getTrip();
+                Trip trip = GPSServiceProvider.getInstance().getTrip();
                 if (trip != null) {
                     String speed = String.format("%.1f", trip.getAvgSpeed() * SPEED_FACTOR);
                     value.setText(speed);

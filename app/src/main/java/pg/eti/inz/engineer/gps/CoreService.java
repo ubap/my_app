@@ -28,16 +28,6 @@ import pg.eti.inz.engineer.utils.Log;
 
 public class CoreService extends Service implements LocationListener,
         GpsStatus.Listener {
-
-//    private Handler handler = new Handler();
-//    private Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            handler.postDelayed(this, 1000);
-//            // PROPOZYCJA: WRZUCAC DANE DO TRIPA CO 1S JAK BEDA ODCZYTY Z INNYCH CZUJNIKÓW
-//        }
-//    };
-
     private List<LocationSource.OnLocationChangedListener> onLocationChangedListeners
             = new LinkedList<LocationSource.OnLocationChangedListener>();
 

@@ -1,17 +1,9 @@
-package pg.eti.inz.engineer.components.base;
+package pg.eti.inz.engineer.components.indicators.base;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.location.Location;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -20,36 +12,35 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
-import android.widget.TextView;
 
 import pg.eti.inz.engineer.R;
-import pg.eti.inz.engineer.components.SpeedometerComponent;
-import pg.eti.inz.engineer.gps.GPSServiceProvider2;
+import pg.eti.inz.engineer.components.indicators.SpeedometerComponent;
+import pg.eti.inz.engineer.components.indicators.TripmeterComponent;
 import pg.eti.inz.engineer.utils.Constants;
 import pg.eti.inz.engineer.utils.Log;
 import pg.eti.inz.engineer.utils.Util;
 
-public class DashboardComponent extends LinearLayout implements View.OnTouchListener, RefreshableComponent, SwitchThemeComponent {
-
-    private final String DEFAULT_UNIT = getContext().getString(R.string.map_kmph);
-    private final String DEFAULT_SPEED_VALUE = getContext().getString(R.string.map_speedmeter_widthtemplate);
-    private final Integer UPDATE_DELAY = 1000;
-    private final Double SPEED_FACTOR = 3.6;
-    private float scaleFactor = 1.f;
+public class DashboardComponent extends LinearLayout
+        implements View.OnTouchListener, RefreshableComponent, SwitchThemeComponent {
 
     private ScaleGestureDetector scaleDetector;
+    private float scaleFactor = 1.f;
     private GestureDetector longPressDetector;
     private boolean moving = false;
     private float startX = 0.f;
     private float startY = 0.f;
+    private int scale = 1;
 
     private ImageView imageView;
     private View component;
 
-    public DashboardComponent (Context context, RelativeLayout.LayoutParams params, boolean customizableMode) {
+    public enum ComponentType {
+        SPEEDMETER, TRIPMETER
+    }
+
+    public DashboardComponent (Context context, ComponentType componentType, RelativeLayout.LayoutParams params, boolean customizableMode) {
         super(context);
-        init(context, params, customizableMode);
+        init(context, componentType, params, customizableMode);
     }
 
     public DashboardComponent (Context context) {
@@ -62,11 +53,10 @@ public class DashboardComponent extends LinearLayout implements View.OnTouchList
 
     public DashboardComponent (Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, null, false);
+        init(context, null, null, false);
     }
 
-
-    private void init(Context context, RelativeLayout.LayoutParams params, boolean customizableMode) {
+    private void init(Context context, ComponentType componentType, RelativeLayout.LayoutParams params, boolean customizableMode) {
         View.inflate(context, R.layout.blank_layout, this);
         if (params != null) {
             setLayoutParams(params);
@@ -81,7 +71,20 @@ public class DashboardComponent extends LinearLayout implements View.OnTouchList
 
         setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS);
 
-        component = new SpeedometerComponent(getContext());
+        if (componentType == null) {
+            componentType = ComponentType.SPEEDMETER;
+        }
+
+        switch (componentType) {
+            case TRIPMETER:
+                component = new TripmeterComponent(getContext());
+            break;
+            case SPEEDMETER:
+            default:
+                component = new SpeedometerComponent(getContext());
+                break;
+        }
+
         update();
 
         if (customizableMode) {
@@ -99,21 +102,24 @@ public class DashboardComponent extends LinearLayout implements View.OnTouchList
                 }
                 @Override
                 public boolean onScale(ScaleGestureDetector detector) {
+                    if (!(component instanceof ResizeableComponent)) {
+                        return false;
+                    }
+
                     scaleFactor *= detector.getScaleFactor();
                     Log.d("onScale, scaleFactor: " + Float.toString(scaleFactor));
+
                     int singleStepResizeMovePx = Util.pxFromDp(getContext(), Constants.SINGLE_STEP_SIZE_RESIZE_MOVE_DP);
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) getLayoutParams();
                     if ((scaleFactor - 1.f)* getWidth() > singleStepResizeMovePx) {
                         scaleFactor = 1.f;
-                        params.width += 2*singleStepResizeMovePx;
-                        params.height += singleStepResizeMovePx;
-                        setLayoutParams(params);
+                        scale++;
+                        updateComponentSize();
                     } else if ((scaleFactor - 1.f)* getWidth() < -singleStepResizeMovePx) {
                         scaleFactor = 1.f;
-                        params.width -= 2*singleStepResizeMovePx;
-                        params.height -= singleStepResizeMovePx;
-                        setLayoutParams(params);
-
+                        if (scale > 1) {
+                            scale--;
+                            updateComponentSize();
+                        }
                     }
                     invalidate();
                     return true;
@@ -143,7 +149,19 @@ public class DashboardComponent extends LinearLayout implements View.OnTouchList
         }
     }
 
+    private void updateComponentSize() {
+        int widthRadio = ((ResizeableComponent) component).getWidthRatio();
+        int heightRatio = ((ResizeableComponent) component).getHeightRatio();
+        int singleStepResizeMovePx = Util.pxFromDp(getContext(), Constants.SINGLE_STEP_SIZE_RESIZE_MOVE_DP);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) getLayoutParams();
+        params.width = scale * widthRadio * singleStepResizeMovePx;
+        params.height = scale * heightRatio * singleStepResizeMovePx;
+        setLayoutParams(params);
+    }
+
     public void update() {
+        if (component == null)
+            return;
         if (component instanceof RefreshableComponent) {
             ((RefreshableComponent) component).update();
         }

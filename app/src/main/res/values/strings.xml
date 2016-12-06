@@ -46,6 +46,8 @@
     <!-- Dashboard -->
     <string name="dashboard.title">Dashboard</string>
     <string name="dashboard.add.speedometer">Add speed-o-meter</string>
+    <string name="dashboard.add.tripmeter">Add tripmeter</string>
+    <string name="dashboard.add.minimap">Add minimap</string>
     <string name="dashboard.switchBrightness">Switch display mode</string>
 
     <!-- Trips -->

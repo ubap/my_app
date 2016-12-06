@@ -18,7 +18,7 @@
     <string name="map.search">Szukaj</string>
     <string name="title_activity_maps">Mapa</string>
     <string name="map">Mapa</string>
-    <string name="dashboard.add.speedometer">Dodaj prędkościomierz</string>
+    <string name="dashboard.add.speedometer">Prędkościomierz</string>
     <string name="dashboard.title">Wskaźniki</string>
     <string name="dashboard.switchBrightness">Zmień sposób wyświetlania</string>
     <string name="trips.distance">Odległość</string>
@@ -31,4 +31,6 @@
     <string name="tripView.avgSpeedLabel">Średnia prędkość</string>
     <string name="tripView.distanceLabel">Dystans</string>
     <string name="tripView.activityName">Podróż</string>
+    <string name="dashboard.add.tripmeter">Przejechany dystans</string>
+    <string name="dashboard.add.minimap">Minimapa</string>
 </resources>

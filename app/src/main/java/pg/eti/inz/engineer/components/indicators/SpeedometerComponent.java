@@ -1,23 +1,23 @@
-package pg.eti.inz.engineer.components;
+package pg.eti.inz.engineer.components.indicators;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import pg.eti.inz.engineer.R;
-import pg.eti.inz.engineer.components.base.SwitchThemeComponent;
-import pg.eti.inz.engineer.components.base.RefreshableComponent;
-import pg.eti.inz.engineer.gps.GPSServiceProvider2;
+import pg.eti.inz.engineer.components.indicators.base.ResizeableComponent;
+import pg.eti.inz.engineer.components.indicators.base.SwitchThemeComponent;
+import pg.eti.inz.engineer.components.indicators.base.RefreshableComponent;
+import pg.eti.inz.engineer.gps.GPSServiceProvider;
 
-public class SpeedometerComponent extends LinearLayout implements RefreshableComponent, SwitchThemeComponent {
+public class SpeedometerComponent extends LinearLayout
+        implements RefreshableComponent, SwitchThemeComponent, ResizeableComponent {
 
     private final String DEFAULT_UNIT = getContext().getString(R.string.map_kmph);
     private final String DEFAULT_SPEED_VALUE = getContext().getString(R.string.map_speedmeter_widthtemplate);
-    private final Integer UPDATE_DELAY = 1000;
     private final Double SPEED_FACTOR = 3.6;
     public final static int SIZE_RATIO_X = 2;
     public final static int SIZE_RATIO_Y = 1;
@@ -38,18 +38,8 @@ public class SpeedometerComponent extends LinearLayout implements RefreshableCom
         init(context);
     }
 
-    public void setBrightTheme() {
-        value.setTextColor(getResources().getColor(R.color.white));
-        unit.setTextColor(getResources().getColor(R.color.white));
-    }
-
-    public void setDarkTheme() {
-        value.setTextColor(getResources().getColor(R.color.black));
-        unit.setTextColor(getResources().getColor(R.color.black));
-    }
-
     private void init(Context context) {
-        View.inflate(context, R.layout.speedometer_customizable, this);
+        View.inflate(context, R.layout.speedmeter_component, this);
         value = (TextView) findViewById(R.id.speedometer_customizable_speed_value);
         unit = (TextView) findViewById(R.id.speedometer_customizable_speed_unit);
 
@@ -59,11 +49,39 @@ public class SpeedometerComponent extends LinearLayout implements RefreshableCom
         unit.setText(DEFAULT_UNIT);
     }
 
+    // SwitchThemeComponent
+    @Override
+    public void setBrightTheme() {
+        value.setTextColor(getResources().getColor(R.color.white));
+        unit.setTextColor(getResources().getColor(R.color.white));
+    }
+
+    // SwitchThemeComponent
+    @Override
+    public void setDarkTheme() {
+        value.setTextColor(getResources().getColor(R.color.black));
+        unit.setTextColor(getResources().getColor(R.color.black));
+    }
+
+    // RefreshableComponent
+    @Override
     public void update() {
-        Location location = GPSServiceProvider2.getInstance().getLocation();
+        Location location = GPSServiceProvider.getInstance().getLocation();
         if (location != null) {
             String speed = String.format("%.1f", location.getSpeed() * SPEED_FACTOR);
             value.setText(speed);
         }
+    }
+
+    // ResizeableComponent
+    @Override
+    public int getWidthRatio() {
+        return 2;
+    }
+
+    // ResizeableComponent
+    @Override
+    public int getHeightRatio() {
+        return 1;
     }
 }

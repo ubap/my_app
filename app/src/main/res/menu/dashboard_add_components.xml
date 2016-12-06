@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/dashboard_menu_add_speedometer"
         android:title="@string/dashboard.add.speedometer" >
-        <!-- "file" submenu -->
+    </item>
+    <item android:id="@+id/dashboard_menu_add_tripmeter"
+        android:title="@string/dashboard.add.tripmeter" >
+    </item>
+    <item android:id="@+id/dashboard_menu_add_minimap"
+        android:title="@string/dashboard.add.minimap" >
     </item>
 </menu>

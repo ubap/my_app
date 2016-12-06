@@ -24,6 +24,9 @@ public class Trip implements java.io.Serializable {
     @Getter
     private List<MeasurePoint> path = new LinkedList<>();
     private MeasurePoint lastMeasure;
+    /*
+    * Przejechany dystans w metrach.
+    * */
     @Getter
     private float distance = 0.0f;
     @Getter @Setter

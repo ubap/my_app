@@ -37,7 +37,7 @@ import pg.eti.inz.engineer.data.DbManager;
 import pg.eti.inz.engineer.data.MeasurePoint;
 import pg.eti.inz.engineer.data.Trip;
 import pg.eti.inz.engineer.gps.CoreService;
-import pg.eti.inz.engineer.gps.GPSServiceProvider2;
+import pg.eti.inz.engineer.gps.GPSServiceProvider;
 import pg.eti.inz.engineer.utils.Log;
 import pg.eti.inz.engineer.components.CustomImageButton;
 
@@ -64,7 +64,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            GPSServiceProvider2 GPSService = GPSServiceProvider2.getInstance();
+            GPSServiceProvider GPSService = GPSServiceProvider.getInstance();
             // update gps status display
             CoreService.GPSStatus gpsStatus = GPSService.getGPSStatus();
             switch (gpsStatus) {
@@ -125,7 +125,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         followPosition = true;
 
         // initial visible buttons
-        if (GPSServiceProvider2.getInstance().isTracking()) {
+        if (GPSServiceProvider.getInstance().isTracking()) {
             startTrackingButton.setVisibility(View.INVISIBLE);
             stopTrackingButton.setVisibility(View.VISIBLE);
             speedMeterLayout.setVisibility(View.VISIBLE);
@@ -200,8 +200,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.setLocationSource(GPSServiceProvider2.getInstance().getLocationSource());
-        Location lastKnownLocation = GPSServiceProvider2.getInstance().getLastKnownLocation();
+        map.setLocationSource(GPSServiceProvider.getInstance().getLocationSource());
+        Location lastKnownLocation = GPSServiceProvider.getInstance().getLastKnownLocation();
         map.moveCamera(CameraUpdateFactory.newLatLng(
                 new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude())));
         map.setOnCameraMoveStartedListener(this);
@@ -299,7 +299,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LinearLayout speedMeterLayout = (LinearLayout) findViewById(R.id.mapSpeedMeterLayout);
         speedMeterLayout.setVisibility(View.VISIBLE);
 
-        GPSServiceProvider2.getInstance().startTracking(new Trip());
+        GPSServiceProvider.getInstance().startTracking(new Trip());
     }
 
     public void stopTrackingBtnClickHandler(View view) {
@@ -311,7 +311,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LinearLayout speedMeterLayout = (LinearLayout) findViewById(R.id.mapSpeedMeterLayout);
         speedMeterLayout.setVisibility(View.INVISIBLE);
 
-        Trip trip = GPSServiceProvider2.getInstance().stopTracking();
+        Trip trip = GPSServiceProvider.getInstance().stopTracking();
         if (dbManager == null) {
             dbManager = new DbManager(this);
         }

@@ -6,29 +6,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.View;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.gps.CoreService;
-import pg.eti.inz.engineer.gps.GPSServiceProvider2;
+import pg.eti.inz.engineer.gps.GPSServiceProvider;
 import pg.eti.inz.engineer.utils.Log;
 
 /**
@@ -44,8 +36,8 @@ public class MainMenuActivity extends Activity implements
         CheckGPSHandler(Context context) { this.context = context; }
         public void handleMessage(Message msg)
         {
-            GPSServiceProvider2.getInstance().setOnGPSStatusHandler(null);
-            if (GPSServiceProvider2.getInstance().getGPSStatus() == CoreService.GPSStatus.DISABLED) {
+            GPSServiceProvider.getInstance().setOnGPSStatusHandler(null);
+            if (GPSServiceProvider.getInstance().getGPSStatus() == CoreService.GPSStatus.DISABLED) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setMessage(R.string.gps_alert_message).setTitle(R.string.gps_alert_title);
 
@@ -87,8 +79,8 @@ public class MainMenuActivity extends Activity implements
         Intent intent = new Intent(this, CoreService.class);
         startService(intent);
 
-        GPSServiceProvider2.getInstance().init(this);
-        GPSServiceProvider2.getInstance().setOnGPSStatusHandler(new CheckGPSHandler(this));
+        GPSServiceProvider.getInstance().init(this);
+        GPSServiceProvider.getInstance().setOnGPSStatusHandler(new CheckGPSHandler(this));
     }
 
     public void navigateToSettings(View view) {
