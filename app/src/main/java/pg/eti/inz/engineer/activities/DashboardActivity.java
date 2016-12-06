@@ -9,7 +9,9 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -22,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import pg.eti.inz.engineer.R;
+import pg.eti.inz.engineer.components.DashboardLayout;
+import pg.eti.inz.engineer.components.indicators.base.DashboardComponent;
 import pg.eti.inz.engineer.components.indicators.base.DashboardComponentFactory;
 import pg.eti.inz.engineer.components.indicators.base.RefreshableComponent;
 import pg.eti.inz.engineer.components.indicators.base.SwitchThemeComponent;
@@ -31,11 +35,13 @@ import pg.eti.inz.engineer.components.indicators.base.SwitchThemeComponent;
  */
 public class DashboardActivity extends AppCompatActivity implements SensorEventListener, PopupMenu.OnMenuItemClickListener {
 
+    Menu menu;
     private RelativeLayout dashboardLayout;
 //    private SpeedometerComponent speedmeter_component;
 //    private CompassComponent compass;
 //    private TripmeterComponent tripmeter;
     private Boolean isNightMode = Boolean.FALSE;
+    private boolean isEditMode = false;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Sensor magnetometer;
@@ -51,7 +57,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     private Runnable runnable;
 
     private List<View> components;
-    private RelativeLayout dashboardViewLayout;
+    private DashboardLayout dashboardViewLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,8 +82,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         rotation = new float[9];
         orientation = new float[3];
         currentDegree = 0f;
-
-        dashboardViewLayout = (RelativeLayout) findViewById(R.id.dashboard_view_layout);
+        dashboardViewLayout = (DashboardLayout) findViewById(R.id.dashboard_view_layout);
         components = new LinkedList<>();
 
         handler = new Handler();
@@ -129,6 +134,9 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
             default:
                 return false;
         }
+        if (component instanceof DashboardComponent) {
+            ((DashboardComponent) component).allowEdit();
+        }
         components.add(component);
         dashboardViewLayout.addView(component);
         return true;
@@ -137,6 +145,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.dashboard_toolbar, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -177,6 +186,14 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                 mapsIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(mapsIntent);
                 return true;
+            case R.id.dashboard_action_edit:
+                isEditMode = true;
+                updateToEditMode();
+                return true;
+            case R.id.dashboard_action_finish_edit:
+                isEditMode = false;
+                updateToEditMode();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -213,5 +230,45 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+    }
+
+    private void updateToEditMode() {
+        FloatingActionButton addComponentButton = (FloatingActionButton) findViewById(R.id.dashboard_add_component_button);
+
+        MenuItem nightModeMenuItem = menu.findItem(R.id.dashboard_brightness);
+        MenuItem editModeMenuItem = menu.findItem(R.id.dashboard_action_edit);
+        MenuItem switchToMapMenuItem = menu.findItem(R.id.action_switch_to_maps);
+        MenuItem finishEditMenuItem = menu.findItem(R.id.dashboard_action_finish_edit);
+
+        //ActionMenuItemView nightModeButton = (ActionMenuItemView) findViewById(R.id.dashboard_brightness);
+        //ActionMenuItemView mapButton = (ActionMenuItemView) findViewById(R.id.action_switch_to_maps);
+        //ActionMenuItemView editButton = (ActionMenuItemView) findViewById(R.id.dashboard_action_edit);
+        //ActionMenuItemView finishEditButton = (ActionMenuItemView) findViewById(R.id.dashboard_action_finish_edit);
+        if (isEditMode) {
+            addComponentButton.setVisibility(View.VISIBLE);
+            editModeMenuItem.setVisible(false);
+            nightModeMenuItem.setVisible(false);
+            switchToMapMenuItem.setVisible(false);
+            finishEditMenuItem.setVisible(true);
+            dashboardViewLayout.setDrawGrid(true);
+            for (View component : components) {
+                if (component instanceof DashboardComponent) {
+                    ((DashboardComponent) component).allowEdit();
+                }
+            }
+        } else {
+            addComponentButton.setVisibility(View.INVISIBLE);
+            editModeMenuItem.setVisible(true);
+            nightModeMenuItem.setVisible(true);
+            switchToMapMenuItem.setVisible(true);
+            finishEditMenuItem.setVisible(false);
+            dashboardViewLayout.setDrawGrid(false);
+            for (View component : components) {
+                if (component instanceof DashboardComponent) {
+                    ((DashboardComponent) component).allowEdit(false);
+                }
+            }
+        }
+        dashboardLayout.invalidate();
     }
 }

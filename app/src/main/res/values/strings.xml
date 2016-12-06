@@ -49,6 +49,9 @@
     <string name="dashboard.add.tripmeter">Add tripmeter</string>
     <string name="dashboard.add.minimap">Add minimap</string>
     <string name="dashboard.switchBrightness">Switch display mode</string>
+    <string name="dashboard.edit">Edit</string>
+    <string name="dashboard.switchToMaps">Switch to maps</string>
+    <string name="dashboard.finishEdit">Finish</string>
 
     <!-- Trips -->
     <string name="trips">Trips</string>

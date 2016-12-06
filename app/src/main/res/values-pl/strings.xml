@@ -33,4 +33,7 @@
     <string name="tripView.activityName">Podróż</string>
     <string name="dashboard.add.tripmeter">Przejechany dystans</string>
     <string name="dashboard.add.minimap">Minimapa</string>
+    <string name="dashboard.switchToMaps">Mapa</string>
+    <string name="dashboard.edit">Edytuj</string>
+    <string name="dashboard.finishEdit">Zakończ</string>
 </resources>

@@ -15,7 +15,7 @@ public class DashboardComponentFactory {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(Util.pxFromDp(context, 32*4), Util.pxFromDp(context, 32*2));
         params.topMargin = Util.pxFromDp(context, 0);
         params.leftMargin = Util.pxFromDp(context, 0);
-        DashboardComponent component = new DashboardComponent(context, DashboardComponent.ComponentType.SPEEDMETER, params, true);
+        DashboardComponent component = new DashboardComponent(context, DashboardComponent.ComponentType.SPEEDMETER, params);
         return component;
     }
 
@@ -23,7 +23,7 @@ public class DashboardComponentFactory {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(Util.pxFromDp(context, 32*4), Util.pxFromDp(context, 32*2));
         params.topMargin = Util.pxFromDp(context, 0);
         params.leftMargin = Util.pxFromDp(context, 0);
-        DashboardComponent component = new DashboardComponent(context, DashboardComponent.ComponentType.TRIPMETER, params, true);
+        DashboardComponent component = new DashboardComponent(context, DashboardComponent.ComponentType.TRIPMETER, params);
         return component;
     }
 }

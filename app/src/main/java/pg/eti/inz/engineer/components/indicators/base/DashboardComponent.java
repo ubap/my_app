@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import lombok.Setter;
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.components.indicators.SpeedometerComponent;
 import pg.eti.inz.engineer.components.indicators.TripmeterComponent;
@@ -31,6 +32,8 @@ public class DashboardComponent extends LinearLayout
     private float startY = 0.f;
     private int scale = 1;
 
+    private boolean allowEdit = false;
+
     private ImageView imageView;
     private View component;
 
@@ -38,9 +41,9 @@ public class DashboardComponent extends LinearLayout
         SPEEDMETER, TRIPMETER
     }
 
-    public DashboardComponent (Context context, ComponentType componentType, RelativeLayout.LayoutParams params, boolean customizableMode) {
+    public DashboardComponent (Context context, ComponentType componentType, RelativeLayout.LayoutParams params) {
         super(context);
-        init(context, componentType, params, customizableMode);
+        init(context, componentType, params);
     }
 
     public DashboardComponent (Context context) {
@@ -53,10 +56,10 @@ public class DashboardComponent extends LinearLayout
 
     public DashboardComponent (Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, null, null, false);
+        init(context, null, null);
     }
 
-    private void init(Context context, ComponentType componentType, RelativeLayout.LayoutParams params, boolean customizableMode) {
+    private void init(Context context, ComponentType componentType, RelativeLayout.LayoutParams params) {
         View.inflate(context, R.layout.blank_layout, this);
         if (params != null) {
             setLayoutParams(params);
@@ -87,66 +90,63 @@ public class DashboardComponent extends LinearLayout
 
         update();
 
-        if (customizableMode) {
-            scaleDetector = new ScaleGestureDetector(context, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-                @Override
-                public boolean onScaleBegin(ScaleGestureDetector detector) {
+        scaleDetector = new ScaleGestureDetector(context, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScaleBegin(ScaleGestureDetector detector) {
+                scaleFactor = 1.f;
+                setBackgroundResource(R.drawable.dashboard_component_resizing);
+                return super.onScaleBegin(detector);
+            }
+            @Override
+            public void onScaleEnd(ScaleGestureDetector detector) {
+                setBackgroundResource(0);
+                super.onScaleEnd(detector);
+            }
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                if (!(component instanceof ResizeableComponent)) {
+                    return false;
+                }
+
+                scaleFactor *= detector.getScaleFactor();
+                Log.d("onScale, scaleFactor: " + Float.toString(scaleFactor));
+
+                int singleStepResizeMovePx = Util.pxFromDp(getContext(), Constants.SINGLE_STEP_SIZE_RESIZE_MOVE_DP);
+                if ((scaleFactor - 1.f)* getWidth() > singleStepResizeMovePx) {
                     scaleFactor = 1.f;
-                    setBackgroundResource(R.drawable.dashboard_component_resizing);
-                    return super.onScaleBegin(detector);
-                }
-                @Override
-                public void onScaleEnd(ScaleGestureDetector detector) {
-                    setBackgroundResource(0);
-                    super.onScaleEnd(detector);
-                }
-                @Override
-                public boolean onScale(ScaleGestureDetector detector) {
-                    if (!(component instanceof ResizeableComponent)) {
-                        return false;
-                    }
-
-                    scaleFactor *= detector.getScaleFactor();
-                    Log.d("onScale, scaleFactor: " + Float.toString(scaleFactor));
-
-                    int singleStepResizeMovePx = Util.pxFromDp(getContext(), Constants.SINGLE_STEP_SIZE_RESIZE_MOVE_DP);
-                    if ((scaleFactor - 1.f)* getWidth() > singleStepResizeMovePx) {
-                        scaleFactor = 1.f;
-                        scale++;
+                    scale++;
+                    updateComponentSize();
+                } else if ((scaleFactor - 1.f)* getWidth() < -singleStepResizeMovePx) {
+                    scaleFactor = 1.f;
+                    if (scale > 1) {
+                        scale--;
                         updateComponentSize();
-                    } else if ((scaleFactor - 1.f)* getWidth() < -singleStepResizeMovePx) {
-                        scaleFactor = 1.f;
-                        if (scale > 1) {
-                            scale--;
-                            updateComponentSize();
-                        }
                     }
-                    invalidate();
-                    return true;
                 }
-            });
-            longPressDetector = new GestureDetector(new GestureDetector.OnGestureListener() {
-                @Override
-                public boolean onDown(MotionEvent e) { return false; }
-                @Override
-                public void onShowPress(MotionEvent e) { }
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) { return false; }
-                @Override
-                public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) { return false; }
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    Log.d("onLongPress");
-                    moving = true;
-                    startX = e.getX(); startY = e.getY();
-                    setBackgroundResource(R.drawable.dashboard_component_moving);
-                }
-                @Override
-                public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                    return false; }
-            });
-            setOnTouchListener(this);
-        }
+                invalidate();
+                return true;
+            }
+        });
+        longPressDetector = new GestureDetector(new GestureDetector.OnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) { return false; }
+            @Override
+            public void onShowPress(MotionEvent e) { }
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) { return false; }
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) { return false; }
+            @Override
+            public void onLongPress(MotionEvent e) {
+                Log.d("onLongPress");
+                moving = true;
+                startX = e.getX(); startY = e.getY();
+                setBackgroundResource(R.drawable.dashboard_component_moving);
+            }
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                return false; }
+        });
     }
 
     private void updateComponentSize() {
@@ -258,4 +258,20 @@ public class DashboardComponent extends LinearLayout
             ((SwitchThemeComponent) component).setDarkTheme();
         }
     }
+
+    public void allowEdit() {
+        allowEdit(true);
+    }
+
+    public void allowEdit(boolean newAllowEdit) {
+        if (newAllowEdit && !allowEdit) {
+            setOnTouchListener(this);
+            allowEdit= !allowEdit;
+        } else if (allowEdit) {
+            setOnTouchListener(null);
+            allowEdit= !allowEdit;
+        }
+
+    }
+
 }
