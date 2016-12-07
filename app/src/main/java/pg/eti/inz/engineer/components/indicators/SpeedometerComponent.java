@@ -12,6 +12,8 @@ import pg.eti.inz.engineer.components.indicators.base.ResizeableComponent;
 import pg.eti.inz.engineer.components.indicators.base.SwitchThemeComponent;
 import pg.eti.inz.engineer.components.indicators.base.RefreshableComponent;
 import pg.eti.inz.engineer.gps.GPSServiceProvider;
+import pg.eti.inz.engineer.utils.Constants;
+import pg.eti.inz.engineer.utils.Util;
 
 public class SpeedometerComponent extends LinearLayout
         implements RefreshableComponent, SwitchThemeComponent, ResizeableComponent {
@@ -83,5 +85,15 @@ public class SpeedometerComponent extends LinearLayout
     @Override
     public int getHeightRatio() {
         return 1;
+    }
+
+    @Override
+    public int getInitialWidth() {
+        return getWidthRatio() * Util.pxFromDp(getContext(), Constants.SINGLE_STEP_SIZE_RESIZE_MOVE_DP);
+    }
+
+    @Override
+    public int getInitialHeight() {
+        return getHeightRatio() * Util.pxFromDp(getContext(), Constants.SINGLE_STEP_SIZE_RESIZE_MOVE_DP);
     }
 }

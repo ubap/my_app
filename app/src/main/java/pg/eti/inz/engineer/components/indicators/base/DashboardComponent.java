@@ -73,9 +73,7 @@ public class DashboardComponent extends LinearLayout
     private void init(final Context context, ComponentType componentType, RelativeLayout.LayoutParams params) {
         View.inflate(context, R.layout.blank_layout, this);
         instance = this;
-        if (params != null) {
-            setLayoutParams(params);
-        }
+
 
         LinearLayout layout = (LinearLayout) findViewById(R.id.blank_layout);
         imageView = new ImageView(getContext());
@@ -99,6 +97,24 @@ public class DashboardComponent extends LinearLayout
             default:
                 component = new SpeedometerComponent(getContext());
                 break;
+        }
+
+        if (component instanceof ResizeableComponent) {
+            ResizeableComponent resizeableComponent = (ResizeableComponent) component;
+            int stepSizePx = Util.pxFromDp(getContext(), Constants.SINGLE_STEP_SIZE_RESIZE_MOVE_DP);
+            if (params == null) {
+
+                params = new RelativeLayout.LayoutParams(
+                        Util.pxFromDp(context, stepSizePx * resizeableComponent.getWidthRatio()),
+                        Util.pxFromDp(context, stepSizePx * resizeableComponent.getHeightRatio()));
+                params.topMargin = 0;
+                params.leftMargin = 0;
+                scale = 1;
+            }
+            scale = params.width / (stepSizePx * resizeableComponent.getWidthRatio());
+            setLayoutParams(params);
+        } else {
+            Log.d("DashboardComponent used to not resizable component");
         }
 
         update();

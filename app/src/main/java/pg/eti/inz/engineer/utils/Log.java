@@ -8,31 +8,47 @@ public class Log {
     static private String TAG = "myApp";
 
     static public void d() {
+        if (!Constants.DEBUG) {
+            return;
+        }
         android.util.Log.d(TAG, getMethodNameFull());
     }
 
     static public void d(String log) {
+        if (!Constants.DEBUG) {
+            return;
+        }
         android.util.Log.d(TAG, getMethodNameFull() + ": " + log);
     }
 
     static public void v() {
+        if (!Constants.DEBUG) {
+            return;
+        }
         android.util.Log.v(TAG, getMethodNameFull());
     }
 
     static public void v(String log) {
+        if (!Constants.DEBUG) {
+            return;
+        }
         android.util.Log.v(TAG, getMethodNameFull() + ": " + log);
     }
 
     static public void i() {
+        if (!Constants.DEBUG) {
+            return;
+        }
         android.util.Log.i(TAG, getMethodNameFull());
     }
 
     static public void i(String log) {
+        if (!Constants.DEBUG) {
+            return;
+        }
         android.util.Log.i(TAG, getMethodNameFull() + ": " + log);
     }
 
-    // to jest hack bo nie umialem tego zrobic. call stack jest jakis dziwny i niedeterministyczny
-    // szukam pierwszego wolanie z pack name i nie z tej klasy.
     static private String getMethodNameFull() {
         String pack = "pg.eti.inz.engineer";
         StackTraceElement method = null;
@@ -46,7 +62,7 @@ public class Log {
             }
         }
         if (method == null) {
-            return "!!ERROR!! Couldn't determine full method name";
+            return "Log !!ERROR!! Couldn't determine full method name";
         }
 
         String className = method.getClassName();

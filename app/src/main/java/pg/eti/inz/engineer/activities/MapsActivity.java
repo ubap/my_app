@@ -118,11 +118,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         stopTrackingButton = (CustomImageButton) findViewById(R.id.mapStopTrackingBtn);
         followPositionButton = (CustomImageButton) findViewById(R.id.mapFollowPositionButton);
         speedMeterLayout = (LinearLayout) findViewById(R.id.mapSpeedMeterLayout);
+        speedMeter = (TextView) findViewById(R.id.MapSpeedMeter);
+        tripMeter = (TextView) findViewById(R.id.MapTripMeter);
+        updateTripMeter(0);
+        updateSpeedMeter(0);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(myToolbar);
 
+        gpsStatusDisplay = (TextView) findViewById(R.id.textView);
+
         followPosition = true;
+        updateFollowPositionButton();
 
         // initial visible buttons
         if (GPSServiceProvider.getInstance().isTracking()) {
@@ -222,18 +229,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // update map thread
         handler.post(runnable);
-
-        speedMeter = (TextView) findViewById(R.id.MapSpeedMeter);
-        speedMeter.setMinimumWidth(speedMeter.getWidth()); // HACK!
-        updateSpeedMeter(0);    // set speed at 0
-
-        tripMeter = (TextView) findViewById(R.id.MapTripMeter);
-        tripMeter.setMinimumWidth((tripMeter.getWidth())); // HACK!
-        updateTripMeter(0);
-
-        gpsStatusDisplay = (TextView) findViewById(R.id.textView);
-
-        updateFollowPositionButton();
     }
 
     @Override

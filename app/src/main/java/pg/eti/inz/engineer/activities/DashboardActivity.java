@@ -268,7 +268,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                 }
             }
         }
-        dashboardLayout.invalidate();
+        dashboardViewLayout.invalidate();
     }
 
     private void saveComponents() {

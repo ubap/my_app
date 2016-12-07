@@ -7,4 +7,6 @@ package pg.eti.inz.engineer.components.indicators.base;
 public interface ResizeableComponent {
     int getWidthRatio();
     int getHeightRatio();
+    int getInitialWidth();
+    int getInitialHeight();
 }
