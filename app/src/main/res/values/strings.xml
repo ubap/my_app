@@ -63,10 +63,13 @@
     <string name="trips.distance">Distance</string>
     <string name="trips.startTime">Start</string>
     <string name="trips.finishTIme">Finish</string>
+    <string name="trips.date">Date</string>
+    <string name="trips.activityName">Trips</string>
 
     <!-- TripView -->
     <string name="tripView.activityName">Trip info</string>
     <string name="tripView.avgSpeedLabel">Average speed</string>
     <string name="tripView.distanceLabel">Distance</string>
+    <string name="tripView.duration">Duration</string>
 
 </resources>

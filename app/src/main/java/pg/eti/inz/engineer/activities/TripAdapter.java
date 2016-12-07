@@ -1,4 +1,4 @@
-package pg.eti.inz.engineer.data;
+package pg.eti.inz.engineer.activities;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,8 +9,10 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 
 import pg.eti.inz.engineer.R;
+import pg.eti.inz.engineer.data.DbHelper;
 
 /**
  * Created by ubap on 2016-11-07.
@@ -30,7 +32,7 @@ public class TripAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find fields to populate in inflated template
-        final TextView tripStartTimeView = (TextView) view.findViewById(R.id.tripStartTimeView);
+        final TextView tripDateView = (TextView) view.findViewById(R.id.tripStartTimeView);
         final TextView tripFinishTimeView = (TextView) view.findViewById(R.id.tripFinishTimeView);
         final TextView tripDistanceView = (TextView) view.findViewById(R.id.tripDistanceView);
 
@@ -40,7 +42,11 @@ public class TripAdapter extends CursorAdapter {
         final double distance = cursor.getDouble(cursor.getColumnIndexOrThrow(DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE));
 
         // Populate fields with extracted properties
-        tripStartTimeView.setText(tripStartTime.toString());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm ");
+        dateFormat.format(tripStartTime.getTime());
+        tripDateView.setText(dateFormat.format(tripStartTime.getTime()));
+
         tripFinishTimeView.setText(tripFinishTime.toString());
         tripDistanceView.setText(String.format("%.1f", distance / 1000));
     }

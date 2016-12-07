@@ -50,9 +50,9 @@
         <activity
             android:name=".activities.DashboardActivity"
             android:label="@string/dashboard.title" />
-
         <activity
-            android:name=".activities.TripsActivity" />
+            android:name=".activities.TripsActivity"
+            android:label="@string/trips.activityName" />
         <activity
             android:name=".activities.ViewTripActivity"
             android:label="@string/tripView.activityName"/>

@@ -41,4 +41,7 @@
     <string name="dashboard.remove.component">Usuń</string>
     <string name="dashboard.component.increaseSize">Powiększ</string>
     <string name="dashboard.component.decreaseSize">Zmniejsz</string>
+    <string name="tripView.duration">Czas trwania</string>
+    <string name="trips.date">Data</string>
+    <string name="trips.activityName">Podróże</string>
 </resources>
