@@ -36,4 +36,6 @@
     <string name="dashboard.switchToMaps">Mapa</string>
     <string name="dashboard.edit">Edytuj</string>
     <string name="dashboard.finishEdit">Zakończ</string>
+    <string name="gps.core.notification.notTracking">Aplikacja uruchomiona</string>
+    <string name="gps.core.notification.tracking">Rejestrowanie podróży.</string>
 </resources>

@@ -10,7 +10,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -28,6 +27,9 @@ import pg.eti.inz.engineer.utils.Log;
 
 public class CoreService extends Service implements LocationListener,
         GpsStatus.Listener {
+
+    private static int NOTIFICATION_SLOT_ID = 1;
+
     private List<LocationSource.OnLocationChangedListener> onLocationChangedListeners
             = new LinkedList<LocationSource.OnLocationChangedListener>();
 
@@ -56,6 +58,7 @@ public class CoreService extends Service implements LocationListener,
     private Location location;
     private double avgSpeed;
     private LocationManager locationManager;
+    private CoreService instance;
 
     private final IBinder mGPSBinder = new GPSBinder();
 
@@ -78,7 +81,6 @@ public class CoreService extends Service implements LocationListener,
         public LocationSource getLocationSource() { return locationSource; }
         public GPSStatus getGPSStatus() { return statusGPS; }
 
-        // TODO: make this function boolean, check if can start tracking, return if started;
         public void startTracking(Trip trip) {
             if (tracking || !trip.start()) {
                 return;
@@ -86,12 +88,20 @@ public class CoreService extends Service implements LocationListener,
             tracking = true;
             avgSpeed = 0.0f;
             currTrip = trip;
+            // make this service as a foreground one
+            NotificationCompat.Builder notificationBuilder =
+                    new NotificationCompat.Builder(getApplicationContext())
+                            .setSmallIcon(R.drawable.apple_safari)
+                            .setContentTitle(getString(R.string.appName))
+                            .setContentText(getString(R.string.gps_core_notification_tracking));
+            instance.startForeground(NOTIFICATION_SLOT_ID, notificationBuilder.build());
         }
 
         public Trip stopTracking() {
             if (!tracking || !currTrip.finish())
                 return null;
             tracking = false;
+            instance.stopForeground(true);
             return currTrip;
         }
     }
@@ -100,6 +110,7 @@ public class CoreService extends Service implements LocationListener,
     @Override
     public void onCreate() {
         locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
+        instance = this;
     }
 
     // Service
@@ -112,24 +123,11 @@ public class CoreService extends Service implements LocationListener,
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d();
-
-        // start gps listener
-        // TODO: Check if registering a location listener for second time won't break anything and is OK
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
             locationManager.addGpsStatusListener(this);
         }
         catch (SecurityException e) { e.printStackTrace(); }
-
-        // make this service as a foreground one
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.apple_safari)
-                        .setContentTitle("Trackowanie drogi")
-                        .setContentText("Trwa");
-
-        this.startForeground(1, notificationBuilder.build());
-
         return START_STICKY;
     }
 
@@ -144,7 +142,7 @@ public class CoreService extends Service implements LocationListener,
     @Override
     public void onLocationChanged(Location location) {
         Log.d(location.toString());
-       // statusGPS = GPSStatus.FIXED;
+        statusGPS = GPSStatus.FIXED;
 
         if (tracking) {
             MeasurePoint measurePoint = new MeasurePoint();

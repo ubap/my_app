@@ -31,6 +31,8 @@
     <string name="gps.alert.message">GPS is disabled. Do you want to go to settings menu?</string>
     <string name="gps.alert.ok">Yes</string>
     <string name="gps.alert.cancel">No</string>
+    <string name="gps.core.notification.notTracking">Application started</string>
+    <string name="gps.core.notification.tracking">Tracking started.</string>
 
     <!-- Common -->
     <string name="cancel">Cancel</string>
