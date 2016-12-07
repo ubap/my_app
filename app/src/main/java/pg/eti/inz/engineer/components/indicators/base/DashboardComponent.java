@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import lombok.Getter;
 import lombok.Setter;
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.components.indicators.SpeedometerComponent;
@@ -34,6 +35,8 @@ public class DashboardComponent extends LinearLayout
 
     private boolean allowEdit = false;
 
+    @Getter
+    private ComponentType componentType;
     private ImageView imageView;
     private View component;
 
@@ -77,6 +80,7 @@ public class DashboardComponent extends LinearLayout
         if (componentType == null) {
             componentType = ComponentType.SPEEDMETER;
         }
+        this.componentType = componentType;
 
         switch (componentType) {
             case TRIPMETER:

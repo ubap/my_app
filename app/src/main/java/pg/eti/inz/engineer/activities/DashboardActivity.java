@@ -2,6 +2,7 @@ package pg.eti.inz.engineer.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -56,7 +57,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     private Handler handler;
     private Runnable runnable;
 
-    private List<View> components;
+    private List<DashboardComponent> components;
     private DashboardLayout dashboardViewLayout;
 
     @Override
@@ -84,6 +85,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         currentDegree = 0f;
         dashboardViewLayout = (DashboardLayout) findViewById(R.id.dashboard_view_layout);
         components = new LinkedList<>();
+        loadComponents();
 
         handler = new Handler();
         runnable = new Runnable() {
@@ -108,13 +110,14 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         popup.show();
     }
 
-
+    @Override
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
+    @Override
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this, accelerometer);
@@ -123,7 +126,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        View component;
+        DashboardComponent component;
         switch (item.getItemId()) {
             case R.id.dashboard_menu_add_speedometer:
                 component = DashboardComponentFactory.createSpeedmeterComponent(this);
@@ -134,9 +137,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
             default:
                 return false;
         }
-        if (component instanceof DashboardComponent) {
-            ((DashboardComponent) component).allowEdit();
-        }
+        component.allowEdit();
         components.add(component);
         dashboardViewLayout.addView(component);
         return true;
@@ -192,6 +193,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                 return true;
             case R.id.dashboard_action_finish_edit:
                 isEditMode = false;
+                saveComponents();
                 updateToEditMode();
                 return true;
             default:
@@ -234,16 +236,10 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
 
     private void updateToEditMode() {
         FloatingActionButton addComponentButton = (FloatingActionButton) findViewById(R.id.dashboard_add_component_button);
-
         MenuItem nightModeMenuItem = menu.findItem(R.id.dashboard_brightness);
         MenuItem editModeMenuItem = menu.findItem(R.id.dashboard_action_edit);
         MenuItem switchToMapMenuItem = menu.findItem(R.id.action_switch_to_maps);
         MenuItem finishEditMenuItem = menu.findItem(R.id.dashboard_action_finish_edit);
-
-        //ActionMenuItemView nightModeButton = (ActionMenuItemView) findViewById(R.id.dashboard_brightness);
-        //ActionMenuItemView mapButton = (ActionMenuItemView) findViewById(R.id.action_switch_to_maps);
-        //ActionMenuItemView editButton = (ActionMenuItemView) findViewById(R.id.dashboard_action_edit);
-        //ActionMenuItemView finishEditButton = (ActionMenuItemView) findViewById(R.id.dashboard_action_finish_edit);
         if (isEditMode) {
             addComponentButton.setVisibility(View.VISIBLE);
             editModeMenuItem.setVisible(false);
@@ -270,5 +266,43 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
             }
         }
         dashboardLayout.invalidate();
+    }
+
+    private void saveComponents() {
+        SharedPreferences sharedPreferences = getSharedPreferences("dashboardComponents", MODE_PRIVATE);
+        SharedPreferences.Editor dashboardEditor = sharedPreferences.edit();
+        dashboardEditor.putInt("componentCount", components.size());
+
+        for (int i=0; i<components.size(); i++) {
+            DashboardComponent component = components.get(i);
+
+            String preferencePrefix = "component" + Integer.toString(i);
+
+            dashboardEditor.putString(preferencePrefix + "type", component.getComponentType().toString());
+            dashboardEditor.putInt(preferencePrefix + "posX", ((RelativeLayout.LayoutParams) component.getLayoutParams()).leftMargin);
+            dashboardEditor.putInt(preferencePrefix + "posY", ((RelativeLayout.LayoutParams) component.getLayoutParams()).topMargin);
+            dashboardEditor.putInt(preferencePrefix + "width", component.getLayoutParams().width);
+            dashboardEditor.putInt(preferencePrefix + "height", component.getLayoutParams().height);
+        }
+        dashboardEditor.commit();
+    }
+
+    private void loadComponents() {
+        SharedPreferences sharedPreferences = getSharedPreferences("dashboardComponents", MODE_PRIVATE);
+        int componentCount = sharedPreferences.getInt("componentCount", 0);
+        for (int i=0; i<componentCount; i++) {
+            String preferencePrefix = "component" + Integer.toString(i);
+
+            String componentTypeString = sharedPreferences.getString(preferencePrefix + "type", DashboardComponent.ComponentType.SPEEDMETER.toString());
+            DashboardComponent.ComponentType componentType = DashboardComponent.ComponentType.valueOf(componentTypeString);
+            int posX = sharedPreferences.getInt(preferencePrefix + "posX", 0);
+            int posY = sharedPreferences.getInt(preferencePrefix + "posY", 0);
+            int width = sharedPreferences.getInt(preferencePrefix + "width", -1);
+            int height = sharedPreferences.getInt(preferencePrefix + "height", -1);
+
+            DashboardComponent component = DashboardComponentFactory.createComponentFromData(this, componentType, posX, posY, width, height);
+            components.add(component);
+            dashboardViewLayout.addView(component);
+        }
     }
 }
