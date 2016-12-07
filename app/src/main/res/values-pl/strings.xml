@@ -38,4 +38,7 @@
     <string name="dashboard.finishEdit">Zakończ</string>
     <string name="gps.core.notification.notTracking">Aplikacja uruchomiona</string>
     <string name="gps.core.notification.tracking">Rejestrowanie podróży.</string>
+    <string name="dashboard.remove.component">Usuń</string>
+    <string name="dashboard.component.increaseSize">Powiększ</string>
+    <string name="dashboard.component.decreaseSize">Zmniejsz</string>
 </resources>

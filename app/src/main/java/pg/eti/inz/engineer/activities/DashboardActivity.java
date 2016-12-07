@@ -57,7 +57,6 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     private Handler handler;
     private Runnable runnable;
 
-    private List<DashboardComponent> components;
     private DashboardLayout dashboardViewLayout;
 
     @Override
@@ -84,14 +83,14 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         orientation = new float[3];
         currentDegree = 0f;
         dashboardViewLayout = (DashboardLayout) findViewById(R.id.dashboard_view_layout);
-        components = new LinkedList<>();
         loadComponents();
 
         handler = new Handler();
         runnable = new Runnable() {
             @Override
             public void run() {
-                for (View component : components) {
+                for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                    View component = dashboardViewLayout.getChildAt(i);
                     if (component instanceof RefreshableComponent) {
                         ((RefreshableComponent) component).update();
                     }
@@ -102,6 +101,7 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         handler.post(runnable);
     }
 
+    // FloatingButton handler
     public void addNewComponent(View view) {
         PopupMenu popup = new PopupMenu(this, view);
         MenuInflater inflater = popup.getMenuInflater();
@@ -138,7 +138,6 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                 return false;
         }
         component.allowEdit();
-        components.add(component);
         dashboardViewLayout.addView(component);
         return true;
     }
@@ -160,7 +159,8 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                     item.setIcon(R.drawable.ic_brightness_5_black_48dp);
                     isNightMode = Boolean.TRUE;
                     dashboardViewLayout.setBackgroundColor(getResources().getColor(R.color.black));
-                    for (View component : components) {
+                    for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                        View component = dashboardViewLayout.getChildAt(i);
                         if (component instanceof SwitchThemeComponent) {
                             ((SwitchThemeComponent) component).setBrightTheme();
                         }
@@ -172,7 +172,8 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                     item.setIcon(R.drawable.ic_brightness_3_black_48dp);
                     isNightMode = Boolean.FALSE;
                     dashboardViewLayout.setBackgroundResource(0);
-                    for (View component : components) {
+                    for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                        View component = dashboardViewLayout.getChildAt(i);
                         if (component instanceof SwitchThemeComponent) {
                             ((SwitchThemeComponent) component).setDarkTheme();
                         }
@@ -247,7 +248,8 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
             switchToMapMenuItem.setVisible(false);
             finishEditMenuItem.setVisible(true);
             dashboardViewLayout.setDrawGrid(true);
-            for (View component : components) {
+            for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                View component = dashboardViewLayout.getChildAt(i);
                 if (component instanceof DashboardComponent) {
                     ((DashboardComponent) component).allowEdit();
                 }
@@ -259,7 +261,8 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
             switchToMapMenuItem.setVisible(true);
             finishEditMenuItem.setVisible(false);
             dashboardViewLayout.setDrawGrid(false);
-            for (View component : components) {
+            for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                View component = dashboardViewLayout.getChildAt(i);
                 if (component instanceof DashboardComponent) {
                     ((DashboardComponent) component).allowEdit(false);
                 }
@@ -271,19 +274,24 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     private void saveComponents() {
         SharedPreferences sharedPreferences = getSharedPreferences("dashboardComponents", MODE_PRIVATE);
         SharedPreferences.Editor dashboardEditor = sharedPreferences.edit();
-        dashboardEditor.putInt("componentCount", components.size());
 
-        for (int i=0; i<components.size(); i++) {
-            DashboardComponent component = components.get(i);
+        int componentCount = 0;
+        for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+            View view = dashboardViewLayout.getChildAt(i);
+            if (!(view instanceof DashboardComponent)) {
+                continue;
+            }
+            DashboardComponent component = (DashboardComponent) view;
 
-            String preferencePrefix = "component" + Integer.toString(i);
-
+            String preferencePrefix = "component" + Integer.toString(componentCount);
             dashboardEditor.putString(preferencePrefix + "type", component.getComponentType().toString());
             dashboardEditor.putInt(preferencePrefix + "posX", ((RelativeLayout.LayoutParams) component.getLayoutParams()).leftMargin);
             dashboardEditor.putInt(preferencePrefix + "posY", ((RelativeLayout.LayoutParams) component.getLayoutParams()).topMargin);
             dashboardEditor.putInt(preferencePrefix + "width", component.getLayoutParams().width);
             dashboardEditor.putInt(preferencePrefix + "height", component.getLayoutParams().height);
+            componentCount++;
         }
+        dashboardEditor.putInt("componentCount", componentCount);
         dashboardEditor.commit();
     }
 
@@ -301,7 +309,6 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
             int height = sharedPreferences.getInt(preferencePrefix + "height", -1);
 
             DashboardComponent component = DashboardComponentFactory.createComponentFromData(this, componentType, posX, posY, width, height);
-            components.add(component);
             dashboardViewLayout.addView(component);
         }
     }

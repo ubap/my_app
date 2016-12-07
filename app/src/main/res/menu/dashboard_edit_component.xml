@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/dashboard_menu_increase_size"
+        android:title="@string/dashboard.component.increaseSize" >
+    </item>
+
+    <item android:id="@+id/dashboard_menu_decrease_size"
+        android:title="@string/dashboard.component.decreaseSize" >
+    </item>
+
+    <item android:id="@+id/dashboard_menu_remove_component"
+        android:title="@string/dashboard.remove.component" >
+    </item>
+</menu>

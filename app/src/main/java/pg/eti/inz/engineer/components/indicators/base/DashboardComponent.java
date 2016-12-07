@@ -3,12 +3,16 @@ package pg.eti.inz.engineer.components.indicators.base;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.PopupMenu;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -16,6 +20,8 @@ import android.widget.RelativeLayout;
 import lombok.Getter;
 import lombok.Setter;
 import pg.eti.inz.engineer.R;
+import pg.eti.inz.engineer.activities.DashboardActivity;
+import pg.eti.inz.engineer.components.DashboardLayout;
 import pg.eti.inz.engineer.components.indicators.SpeedometerComponent;
 import pg.eti.inz.engineer.components.indicators.TripmeterComponent;
 import pg.eti.inz.engineer.utils.Constants;
@@ -23,7 +29,8 @@ import pg.eti.inz.engineer.utils.Log;
 import pg.eti.inz.engineer.utils.Util;
 
 public class DashboardComponent extends LinearLayout
-        implements View.OnTouchListener, RefreshableComponent, SwitchThemeComponent {
+        implements View.OnTouchListener, RefreshableComponent, SwitchThemeComponent,
+        PopupMenu.OnMenuItemClickListener {
 
     private ScaleGestureDetector scaleDetector;
     private float scaleFactor = 1.f;
@@ -39,6 +46,7 @@ public class DashboardComponent extends LinearLayout
     private ComponentType componentType;
     private ImageView imageView;
     private View component;
+    private DashboardComponent instance;
 
     public enum ComponentType {
         SPEEDMETER, TRIPMETER
@@ -62,8 +70,9 @@ public class DashboardComponent extends LinearLayout
         init(context, null, null);
     }
 
-    private void init(Context context, ComponentType componentType, RelativeLayout.LayoutParams params) {
+    private void init(final Context context, ComponentType componentType, RelativeLayout.LayoutParams params) {
         View.inflate(context, R.layout.blank_layout, this);
+        instance = this;
         if (params != null) {
             setLayoutParams(params);
         }
@@ -143,14 +152,44 @@ public class DashboardComponent extends LinearLayout
             @Override
             public void onLongPress(MotionEvent e) {
                 Log.d("onLongPress");
-                moving = true;
-                startX = e.getX(); startY = e.getY();
-                setBackgroundResource(R.drawable.dashboard_component_moving);
+                LinearLayout layout = (LinearLayout) findViewById(R.id.blank_layout);
+                PopupMenu popup = new PopupMenu(getContext(), layout);
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.dashboard_edit_component, popup.getMenu());
+                popup.setOnMenuItemClickListener(instance);
+                popup.show();
             }
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 return false; }
         });
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.dashboard_menu_remove_component:
+                ViewParent viewParent = getParent();
+                if (viewParent instanceof DashboardLayout) {
+                    ((DashboardLayout) viewParent).removeView(this);
+                } else {
+                    Log.d("could not remove compionent because its parent is not DashboardLayout!! CRITICAL fail");
+                }
+                break;
+            case R.id.dashboard_menu_increase_size:
+                scale++;
+                updateComponentSize();
+                break;
+            case R.id.dashboard_menu_decrease_size:
+                if (scale > 1) {
+                    scale--;
+                    updateComponentSize();
+                }
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
 
     private void updateComponentSize() {
@@ -178,7 +217,11 @@ public class DashboardComponent extends LinearLayout
         scaleDetector.onTouchEvent(event);
         longPressDetector.onTouchEvent(event);
 
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            moving = true;
+            startX = event.getX(); startY = event.getY();
+            setBackgroundResource(R.drawable.dashboard_component_moving);
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
             moving = false;
             setBackgroundResource(0);
         } else if (event.getAction() == MotionEvent.ACTION_MOVE && moving) {

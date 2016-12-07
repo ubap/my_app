@@ -54,6 +54,9 @@
     <string name="dashboard.edit">Edit</string>
     <string name="dashboard.switchToMaps">Switch to maps</string>
     <string name="dashboard.finishEdit">Finish</string>
+    <string name="dashboard.remove.component">Remove</string>
+    <string name="dashboard.component.increaseSize">Increase size</string>
+    <string name="dashboard.component.decreaseSize">Decrease size</string>
 
     <!-- Trips -->
     <string name="trips">Trips</string>
