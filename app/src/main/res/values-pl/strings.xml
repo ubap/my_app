@@ -27,7 +27,7 @@
     <string name="trips">Podróże</string>
     <string name="gps.alert.ok">Tak</string>
     <string name="gps.alert.cancel">Nie</string>
-    <string name="map.start.tracking">Rozpocznij śledzenie</string>
+    <string name="map.start.tracking">Rejestruj podróż</string>
     <string name="tripView.avgSpeedLabel">Średnia prędkość</string>
     <string name="tripView.distanceLabel">Dystans</string>
     <string name="tripView.activityName">Podróż</string>
