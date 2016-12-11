@@ -15,7 +15,7 @@ import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.data.DbHelper;
 
 /**
- * Created by ubap on 2016-11-07.
+ * Adapter przystosowujący dane z bazy danych na layout obrazujący obiekt {@link pg.eti.inz.engineer.data.Trip}
  */
 
 public class TripAdapter extends CursorAdapter {

@@ -35,27 +35,42 @@
         <activity
             android:name=".activities.MainMenuActivity"
             android:label="@string/appName"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:noHistory="true" />
+
+        <activity
+            android:name=".activities.MapsActivity"
+            android:label="@string/title_activity_maps" />
+
+        <activity
+            android:name=".activities.DashboardActivity"
+            android:label="@string/dashboard.title" />
+
+        <activity
+            android:name=".activities.TripsActivity"
+            android:label="@string/trips.activityName" />
+
+        <activity
+            android:name=".activities.ViewTripActivity"
+            android:label="@string/tripView.activityName"/>
+
+        <activity android:name=".activities.LoginActivity"
+            android:label="@string/loginView.activityName" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.SettingsActivity"
-            android:configChanges="locale" />
-        <activity
-            android:name=".activities.MapsActivity"
-            android:label="@string/title_activity_maps" />
-        <activity
-            android:name=".activities.DashboardActivity"
-            android:label="@string/dashboard.title" />
-        <activity
-            android:name=".activities.TripsActivity"
-            android:label="@string/trips.activityName" />
-        <activity
-            android:name=".activities.ViewTripActivity"
-            android:label="@string/tripView.activityName"/>
+
+        <activity android:name=".activities.RegisterActivity"
+            android:label="@string/registerView.activityName" />
+
+        <activity android:name=".activities.ChangePasswordActivity"
+            android:label="@string/changePasswordView.activityName" android:noHistory="true" />
+
     </application>
 
 </manifest>

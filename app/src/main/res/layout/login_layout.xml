@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="@string/loginView.loginToServiceValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="146dp"
+        android:textSize="@dimen/loginView.titleLabelSize"
+        android:id="@+id/login_titleTextView"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="@string/loginView.usernameTextBoxValue"
+        android:ems="10"
+        android:maxLength="30"
+        android:layout_below="@+id/login_titleTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:id="@+id/login_loginEditText"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:maxLength="30"
+        android:layout_below="@+id/login_loginEditText"
+        android:layout_alignLeft="@+id/login_loginEditText"
+        android:layout_alignStart="@+id/login_loginEditText"
+        android:id="@+id/login_passwordEditText"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true" />
+
+    <Button
+        android:text="@string/loginView.loginButtonValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/login_passwordEditText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp"
+        android:id="@+id/login_logInButton"
+        android:elevation="0dp"
+        android:onClick="signIntoService"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true" />
+
+    <Button
+        android:text="@string/loginView.skipButtonValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/login_logInButton"
+        android:layout_alignEnd="@+id/login_logInButton"
+        android:layout_marginBottom="57dp"
+        android:id="@+id/login_skipLoginButton"
+        tools:text="@string/loginView.skipButtonValue"
+        android:onClick="navigateToMainMenu"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true" />
+
+    <Button
+        android:text="@string/loginView.registerButtonValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/login_registerButton"
+        android:onClick="navigateToRegister"
+        android:layout_below="@+id/login_logInButton"
+        android:layout_alignLeft="@+id/login_logInButton"
+        android:layout_alignStart="@+id/login_logInButton"
+        android:textAlignment="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

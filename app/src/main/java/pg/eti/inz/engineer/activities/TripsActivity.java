@@ -3,9 +3,9 @@ package pg.eti.inz.engineer.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -36,8 +36,8 @@ public class TripsActivity extends AppCompatActivity {
         tripList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor mycursor = (Cursor) parent.getItemAtPosition(position);
-                Trip trip = new Trip(mycursor);
+                Cursor myCursor = (Cursor) parent.getItemAtPosition(position);
+                Trip trip = new Trip(myCursor);
 
                 Intent mapIntent = new Intent(context, ViewTripActivity.class);
                 mapIntent.putExtra("trip", trip);

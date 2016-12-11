@@ -6,4 +6,8 @@
     <!-- tripVIew -->
     <dimen name="tripView.LabelTextSize">28dp</dimen>
     <dimen name="tripView.ViewTextSize">30dp</dimen>
+
+    <!-- loginView -->
+    <dimen name="loginView.titleLabelSize">30dp</dimen>
+
 </resources>

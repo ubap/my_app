@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.sql.Time;
 
 import lombok.Getter;
-import lombok.Setter;
 import pg.eti.inz.engineer.utils.Log;
 
 /**
@@ -61,5 +60,21 @@ public class MeasurePoint implements java.io.Serializable {
         } else {
             Log.d("nierozpoznana wersja MeasurePoint");
         }
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public void setTime(Time time) {
+        this.time = time;
     }
 }

@@ -2,10 +2,32 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent" android:layout_height="fill_parent">
 
-    <CheckBoxPreference
-        android:key="@string/settings.gps.network.key"
-        android:title="@string/settings.gps.network.title"
-        android:summary="@string/settings.gps.network.summary"
-        android:defaultValue="false" />
+    <PreferenceCategory android:title="@string/settings.category.network">
+
+        <CheckBoxPreference
+            android:key="@string/settings.gps.network.key"
+            android:title="@string/settings.gps.network.title"
+            android:summary="@string/settings.gps.network.summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings.category.user">
+
+        <Preference android:title="@string/settings.user.account.changePassword"
+            android:key="@string/settings.user.account.changePassword.key" />
+
+        <Preference android:title="@string/settings.user.account.synchronize"
+            android:key="@string/settings.user.account.synchronize.key" />
+
+        <Preference android:title="@string/settings.user.account.logout"
+            android:key="@string/settings.user.account.logout.key" />
+
+        <Preference android:title="@string/settings.user.account.delete"
+            android:key="@string/settings.user.account.delete.key" />
+
+        <Preference android:title="@string/settings.user.account.login"
+            android:key="@string/settings.user.account.login.key" />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

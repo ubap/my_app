@@ -1,7 +1,5 @@
 package pg.eti.inz.engineer.utils;
 
-import pg.eti.inz.engineer.R;
-
 /**
  * Utility class with global application constants
  */
@@ -24,6 +22,14 @@ public class Constants {
     public static final double SCALE_FACTOR_DETECT_SCALE = .1f;
 
     public static final boolean DEBUG = true;
+
+    //Login
+    public static final String CREDENTIALS_SHARED_PREFERENCES_NAME = "currentLoggedUser";
+
+    //REST service address
+    public static final String REST_SERVICE_ADDRESS = "http://81.2.239.28:8080/RestEngineerService/";
+    public static final String REST_SERVICE_USERNAME_SHARED_PREFERENCES_KEY = "username";
+    public static final String REST_SERVICE_PASSWORD_SHARED_PREFERENCES_KEY = "password";
 
     private Constants() {}
 }

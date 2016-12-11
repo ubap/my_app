@@ -17,14 +17,27 @@
 
     <!-- Settings keys -->
     <string name="settings.gps.network.key" translatable="false">useNetwork</string>
+    <string name="settings.user.account.changePassword.key" translatable="false">changeUserPassword</string>
+    <string name="settings.user.account.delete.key" translatable="false">deleteAccount</string>
+    <string name="settings.user.account.logout.key" translatable="false">logoutUser</string>
+    <string name="settings.user.account.login.key" translatable="false">logInUser</string>
+    <string name="settings.user.account.synchronize.key" translatable="false">synchronize</string>
 
     <!-- Settings titles -->
     <string name="settings.gps.network.title">Use network to get location.</string>
+    <string name="settings.user.account.changePassword">Change user password</string>
+    <string name="settings.user.account.delete">Delete account</string>
+    <string name="settings.user.account.logout">Logout</string>
+    <string name="settings.user.account.login">Sign In</string>
+    <string name="settings.user.account.synchronize">Synchronize</string>
 
-    <!-- Settings default values -->
+    <!-- Settings categories -->
+    <string name="settings.category.network">Network</string>
+    <string name="settings.category.user">Users Account</string>
 
     <!-- Settings summaries -->
     <string name="settings.gps.network.summary">When selected, location will be firstly got from the Internet.</string>
+    <string name="settings.user.account.delete.confirmation.summary">Are you sure you want to delete this account?</string>
 
     <!-- GPS -->
     <string name="gps.alert.title">GPS Settings</string>
@@ -72,4 +85,30 @@
     <string name="tripView.distanceLabel">Distance</string>
     <string name="tripView.duration">Duration</string>
 
+    <!-- LoginView -->
+    <string name="loginView.activityName">Login</string>
+    <string name="loginView.usernameTextBoxValue">Login</string>
+    <string name="loginView.registerButtonValue">Register</string>
+    <string name="loginView.loginButtonValue">Sign in</string>
+    <string name="loginView.skipButtonValue">Skip</string>
+    <string name="loginView.loginToServiceValue">Log in to service</string>
+
+    <!-- RegisterView -->
+    <string name="registerView.activityName">Register</string>
+    <string name="registerView.registerButtonValue">Register</string>
+    <string name="registerView.usernameTextViewValue">Login</string>
+
+    <!-- Change password view -->
+    <string name="changePasswordView.activityName">Change password</string>
+    <string name="changePasswordView.oldPasswordTextViewValue">Old password</string>
+    <string name="changePasswordView.newPasswordTextViewValue">New password</string>
+    <string name="changePasswordView.repeatNewPasswordTextViewValue">Repeat new password</string>
+    
+    <!-- Toast Messages -->
+    <string name="toast.loginFailed">Cannot sign in. Check your login and password.</string>
+    <string name="toast.registerFailed">Register failed. Login must have at least 6 characters. Password must have at least 6 characters including digit and special character.</string>
+    <string name="toast.deleteFailed">User removal failed.</string>
+    <string name="toast.passwordChangeFailed">Password change failed.</string>
+    <string name="toast.changePassword.formError">Given credentials are not valid.</string>
+    <string name="toast.synchronizeWithServiceFailed">Synchronization of trip failed.</string>
 </resources>

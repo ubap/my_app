@@ -10,6 +10,7 @@ import android.provider.BaseColumns;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +33,14 @@ public class DbManager {
         values.put(DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE, trip.getDistance());
         values.put(DbHelper.TripContract.Trip.COLUMN_NAME_AVG_SPEED, trip.getAvgSpeed());
 
+        if (trip.getIsSynchronized() != null) {
+            values.put(DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_SYNCHRONIZED, trip.getIsSynchronized());
+        }
+
+        if (trip.getRemoteId() != null) {
+            values.put(DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_REMOTE_ID, trip.getRemoteId());
+        }
+
         List<MeasurePoint> path = trip.getPath();
 
         try {
@@ -49,15 +58,6 @@ public class DbManager {
 
     public Cursor getTripsCursor() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        // Define a projection that specifies which columns from the database you will actually use after this query.
-        String[] projection = {
-                DbHelper.TripContract.Trip._ID,
-                DbHelper.TripContract.Trip.COLUMN_NAME_START_TIME,
-                DbHelper.TripContract.Trip.COLUMN_NAME_FINISH_TIME,
-                DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE,
-                DbHelper.TripContract.Trip.COLUMN_NAME_AVG_SPEED,
-                DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_DATA
-        };
 
 // Filter results WHERE "title" = 'My Title'
       //  String selection = FeedEntry.COLUMN_NAME_TITLE + " = ?";
@@ -69,7 +69,7 @@ public class DbManager {
 
         Cursor c = db.query(
                 DbHelper.TripContract.Trip.TABLE_NAME,                     // The table to query
-                projection,                               // The columns to return
+                getProjection(),                               // The columns to return
                 null,                                // The columns for the WHERE clause
                 null,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
@@ -80,7 +80,62 @@ public class DbManager {
         return c;
     }
 
+    public void updateTripSynchronization(Trip trip) {
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_SYNCHRONIZED, trip.getIsSynchronized());
+        contentValues.put(DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_REMOTE_ID, trip.getRemoteId());
+
+        database.update(DbHelper.TripContract.Trip.TABLE_NAME, contentValues,
+                DbHelper.TripContract.Trip._ID + "=" + trip.getId(), null);
+    }
+
+    public List<Trip> getUnsynchronizedTrips() {
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+        List<Trip> unsynchronizedTrips = new ArrayList<>();
+
+        Cursor cursor = database.query(DbHelper.TripContract.Trip.TABLE_NAME,
+                getProjection(),
+                DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_SYNCHRONIZED + "= 0",
+                null,
+                null,
+                null,
+                null);
+
+        while (cursor.moveToNext()) {
+            unsynchronizedTrips.add(new Trip(cursor));
+        }
+
+        return unsynchronizedTrips;
+    }
+
+    public List<Trip> getAllTrips() {
+        List<Trip> trips = new ArrayList<>();
+        Cursor cursor = getTripsCursor();
+
+        while (cursor.moveToNext()) {
+            trips.add(new Trip(cursor));
+        }
+
+        return trips;
+    }
+
     public void closeConnection() {
         dbHelper.close();
+    }
+
+    private String[] getProjection() {
+        // Define a projection that specifies which columns from the database you will actually use after this query.
+        return new String[] {
+                DbHelper.TripContract.Trip._ID,
+                DbHelper.TripContract.Trip.COLUMN_NAME_START_TIME,
+                DbHelper.TripContract.Trip.COLUMN_NAME_FINISH_TIME,
+                DbHelper.TripContract.Trip.COLUMN_NAME_DISTANCE,
+                DbHelper.TripContract.Trip.COLUMN_NAME_AVG_SPEED,
+                DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_DATA,
+                DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_SYNCHRONIZED,
+                DbHelper.TripContract.Trip.COLUMN_NAME_TRIP_REMOTE_ID
+        };
     }
 }

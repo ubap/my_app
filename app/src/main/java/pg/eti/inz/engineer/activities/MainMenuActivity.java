@@ -24,7 +24,7 @@ import pg.eti.inz.engineer.gps.GPSServiceProvider;
 import pg.eti.inz.engineer.utils.Log;
 
 /**
- * Main menu of application
+ * Główne menu aplikacji
  */
 public class MainMenuActivity extends Activity implements
         ResultCallback<LocationSettingsResult> {
