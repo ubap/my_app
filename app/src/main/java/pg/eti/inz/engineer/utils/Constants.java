@@ -19,5 +19,11 @@ public class Constants {
     // SERVICE
     public static final String BROADCAST_ACTION_GPS_STATUS_SET = "BROADCAST_ACTION_GPS_STATUS_SET";
 
+    // DASHBOARD COMPONENTS
+    public static final int SINGLE_STEP_SIZE_RESIZE_MOVE_DP = 32;
+    public static final double SCALE_FACTOR_DETECT_SCALE = .1f;
+
+    public static final boolean DEBUG = true;
+
     private Constants() {}
 }

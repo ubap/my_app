@@ -52,10 +52,15 @@ public class ViewTripActivity extends AppCompatActivity implements OnMapReadyCal
         layoutInflated = false;
         trip = (Trip) getIntent().getSerializableExtra("trip");
         TextView averageSpeedView = (TextView) findViewById(R.id.tripViewAverageSpeedView);
-        averageSpeedView.setText(String.format("%.1f", trip.getAvgSpeed() * SPEED_FACTOR));
+        averageSpeedView.setText(String.format("%.1f", trip.getAvgSpeed() * SPEED_FACTOR) + " " + getString(R.string.map_kmph));
 
         TextView distanceView = (TextView) findViewById(R.id.tripViewDistanceView);
-        distanceView.setText(String.format("%.1f", trip.getDistance() / 1000));
+        distanceView.setText(String.format("%.1f", trip.getDistance() / 1000) + " " + getString(R.string.map_km));
+
+        TextView durationView = (TextView) findViewById(R.id.tripViewDurationView);
+        long timeDiff = (trip.getFinishTime().getTime() - trip.getStartTime().getTime()) / 1000;
+        durationView.setText(String.format("%dh %02dm %02ds", timeDiff / 3600, (timeDiff % 3600) / 60, (timeDiff % 60)));
+
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.view_trip_map);

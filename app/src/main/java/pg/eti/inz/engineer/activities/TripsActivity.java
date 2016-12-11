@@ -5,15 +5,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import pg.eti.inz.engineer.R;
 import pg.eti.inz.engineer.data.DbManager;
 import pg.eti.inz.engineer.data.Trip;
-import pg.eti.inz.engineer.data.TripAdapter;
 
 public class TripsActivity extends AppCompatActivity {
     Context context;
@@ -23,6 +22,9 @@ public class TripsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trips);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.trips_toolbar);
+        setSupportActionBar(myToolbar);
 
         context = this;
         ListView tripList = (ListView) findViewById(R.id.tripsTripList);

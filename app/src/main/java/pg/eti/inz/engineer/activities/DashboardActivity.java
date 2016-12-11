@@ -2,34 +2,47 @@ package pg.eti.inz.engineer.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.RelativeLayout;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import pg.eti.inz.engineer.R;
-import pg.eti.inz.engineer.components.CompassComponent;
-import pg.eti.inz.engineer.components.SpeedometerComponent;
-import pg.eti.inz.engineer.components.TripmeterComponent;
+import pg.eti.inz.engineer.components.DashboardLayout;
+import pg.eti.inz.engineer.components.indicators.base.DashboardComponent;
+import pg.eti.inz.engineer.components.indicators.base.DashboardComponentFactory;
+import pg.eti.inz.engineer.components.indicators.base.RefreshableComponent;
+import pg.eti.inz.engineer.components.indicators.base.SwitchThemeComponent;
 
 /**
  * Klasa obslugujaca aktywnosc zawierajaca liczniki i wskazniki
  */
-public class DashboardActivity extends AppCompatActivity implements SensorEventListener {
+public class DashboardActivity extends AppCompatActivity implements SensorEventListener, PopupMenu.OnMenuItemClickListener {
 
+    Menu menu;
     private RelativeLayout dashboardLayout;
-    private SpeedometerComponent speedometer;
-    private CompassComponent compass;
-    private TripmeterComponent tripmeter;
+//    private SpeedometerComponent speedmeter_component;
+//    private CompassComponent compass;
+//    private TripmeterComponent tripmeter;
     private Boolean isNightMode = Boolean.FALSE;
+    private boolean isEditMode = false;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Sensor magnetometer;
@@ -41,6 +54,11 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     private float[] orientation;
     private float currentDegree;
 
+    private Handler handler;
+    private Runnable runnable;
+
+    private DashboardLayout dashboardViewLayout;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +67,11 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         Toolbar myToolbar = (Toolbar) findViewById(R.id.dashboard_toolbar);
         setSupportActionBar(myToolbar);
 
-        dashboardLayout = (RelativeLayout) findViewById(R.id.dashboard_layout);
-        speedometer = (SpeedometerComponent) findViewById(R.id.dashboard_speedometer);
-        compass = (CompassComponent) findViewById(R.id.dashboard_compass);
-        tripmeter = (TripmeterComponent) findViewById(R.id.dashboard_trip_meter);
+         dashboardLayout = (RelativeLayout) findViewById(R.id.dashboard_layout);
+//        speedmeter_component = (SpeedometerComponent) findViewById(R.id.dashboard_speedometer);
+//        compass = (CompassComponent) findViewById(R.id.dashboard_compass);
+//        tripmeter = (TripmeterComponent) findViewById(R.id.dashboard_trip_meter);
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -63,22 +82,42 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
         rotation = new float[9];
         orientation = new float[3];
         currentDegree = 0f;
+        dashboardViewLayout = (DashboardLayout) findViewById(R.id.dashboard_view_layout);
+        loadComponents();
 
-
-        RelativeLayout dashboardViewLayout = (RelativeLayout) findViewById(R.id.dashboard_view_layout);
-
-
-        float density = getResources().getDisplayMetrics().density;
-        float widthDp = (float)dashboardViewLayout.getWidth() / density;
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                    View component = dashboardViewLayout.getChildAt(i);
+                    if (component instanceof RefreshableComponent) {
+                        ((RefreshableComponent) component).update();
+                    }
+                }
+                handler.postDelayed(this, 1000);
+            }
+        };
+        handler.post(runnable);
     }
 
+    // FloatingButton handler
+    public void addNewComponent(View view) {
+        PopupMenu popup = new PopupMenu(this, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.dashboard_add_components, popup.getMenu());
+        popup.setOnMenuItemClickListener(this);
+        popup.show();
+    }
 
+    @Override
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
+    @Override
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this, accelerometer);
@@ -86,8 +125,27 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
     }
 
     @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        DashboardComponent component;
+        switch (item.getItemId()) {
+            case R.id.dashboard_menu_add_speedometer:
+                component = DashboardComponentFactory.createSpeedmeterComponent(this);
+                break;
+            case R.id.dashboard_menu_add_tripmeter:
+                component = DashboardComponentFactory.createTripmeterComponent(this);
+                break;
+            default:
+                return false;
+        }
+        component.allowEdit();
+        dashboardViewLayout.addView(component);
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.dashboard_toolbar, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -100,17 +158,29 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                 if (!isNightMode) {
                     item.setIcon(R.drawable.ic_brightness_5_black_48dp);
                     isNightMode = Boolean.TRUE;
-                    dashboardLayout.setBackgroundColor(getResources().getColor(R.color.black));
-                    speedometer.setBrightTheme();
-                    compass.setBrightPointer();
-                    tripmeter.setBrightTheme();
+                    dashboardViewLayout.setBackgroundColor(getResources().getColor(R.color.black));
+                    for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                        View component = dashboardViewLayout.getChildAt(i);
+                        if (component instanceof SwitchThemeComponent) {
+                            ((SwitchThemeComponent) component).setBrightTheme();
+                        }
+                        if (component instanceof RefreshableComponent) {
+                            ((RefreshableComponent) component).update();
+                        }
+                    }
                 } else {
                     item.setIcon(R.drawable.ic_brightness_3_black_48dp);
                     isNightMode = Boolean.FALSE;
-                    dashboardLayout.setBackgroundColor(getResources().getColor(R.color.white));
-                    speedometer.setDarkTheme();
-                    compass.setDarkPointer();
-                    tripmeter.setDarkTheme();
+                    dashboardViewLayout.setBackgroundResource(0);
+                    for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                        View component = dashboardViewLayout.getChildAt(i);
+                        if (component instanceof SwitchThemeComponent) {
+                            ((SwitchThemeComponent) component).setDarkTheme();
+                        }
+                        if (component instanceof RefreshableComponent) {
+                            ((RefreshableComponent) component).update();
+                        }
+                    }
                 }
                 return true;
             case R.id.action_switch_to_maps:
@@ -118,9 +188,26 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
                 mapsIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(mapsIntent);
                 return true;
+            case R.id.dashboard_action_edit:
+                isEditMode = true;
+                updateToEditMode();
+                return true;
+            case R.id.dashboard_action_finish_edit:
+                isEditMode = false;
+                saveComponents();
+                updateToEditMode();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        Intent mainMenuActivity = new Intent(this, MainMenuActivity.class);
+        mainMenuActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainMenuActivity);
     }
 
     @Override
@@ -139,14 +226,90 @@ public class DashboardActivity extends AppCompatActivity implements SensorEventL
 
             float azimuthInRadians = orientation[0];
             float azimuthInDegrees = (float) (Math.toDegrees(azimuthInRadians) + 360) % 360;
-
-            compass.rotatePointer(currentDegree, azimuthInDegrees);
-
+//            compass.rotatePointer(currentDegree, azimuthInDegrees);
             currentDegree = -azimuthInDegrees;
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+    }
+
+    private void updateToEditMode() {
+        FloatingActionButton addComponentButton = (FloatingActionButton) findViewById(R.id.dashboard_add_component_button);
+        MenuItem nightModeMenuItem = menu.findItem(R.id.dashboard_brightness);
+        MenuItem editModeMenuItem = menu.findItem(R.id.dashboard_action_edit);
+        MenuItem switchToMapMenuItem = menu.findItem(R.id.action_switch_to_maps);
+        MenuItem finishEditMenuItem = menu.findItem(R.id.dashboard_action_finish_edit);
+        if (isEditMode) {
+            addComponentButton.setVisibility(View.VISIBLE);
+            editModeMenuItem.setVisible(false);
+            nightModeMenuItem.setVisible(false);
+            switchToMapMenuItem.setVisible(false);
+            finishEditMenuItem.setVisible(true);
+            dashboardViewLayout.setDrawGrid(true);
+            for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                View component = dashboardViewLayout.getChildAt(i);
+                if (component instanceof DashboardComponent) {
+                    ((DashboardComponent) component).allowEdit();
+                }
+            }
+        } else {
+            addComponentButton.setVisibility(View.INVISIBLE);
+            editModeMenuItem.setVisible(true);
+            nightModeMenuItem.setVisible(true);
+            switchToMapMenuItem.setVisible(true);
+            finishEditMenuItem.setVisible(false);
+            dashboardViewLayout.setDrawGrid(false);
+            for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+                View component = dashboardViewLayout.getChildAt(i);
+                if (component instanceof DashboardComponent) {
+                    ((DashboardComponent) component).allowEdit(false);
+                }
+            }
+        }
+        dashboardViewLayout.invalidate();
+    }
+
+    private void saveComponents() {
+        SharedPreferences sharedPreferences = getSharedPreferences("dashboardComponents", MODE_PRIVATE);
+        SharedPreferences.Editor dashboardEditor = sharedPreferences.edit();
+
+        int componentCount = 0;
+        for (int i=0; i<dashboardViewLayout.getChildCount(); i++) {
+            View view = dashboardViewLayout.getChildAt(i);
+            if (!(view instanceof DashboardComponent)) {
+                continue;
+            }
+            DashboardComponent component = (DashboardComponent) view;
+
+            String preferencePrefix = "component" + Integer.toString(componentCount);
+            dashboardEditor.putString(preferencePrefix + "type", component.getComponentType().toString());
+            dashboardEditor.putInt(preferencePrefix + "posX", ((RelativeLayout.LayoutParams) component.getLayoutParams()).leftMargin);
+            dashboardEditor.putInt(preferencePrefix + "posY", ((RelativeLayout.LayoutParams) component.getLayoutParams()).topMargin);
+            dashboardEditor.putInt(preferencePrefix + "width", component.getLayoutParams().width);
+            dashboardEditor.putInt(preferencePrefix + "height", component.getLayoutParams().height);
+            componentCount++;
+        }
+        dashboardEditor.putInt("componentCount", componentCount);
+        dashboardEditor.commit();
+    }
+
+    private void loadComponents() {
+        SharedPreferences sharedPreferences = getSharedPreferences("dashboardComponents", MODE_PRIVATE);
+        int componentCount = sharedPreferences.getInt("componentCount", 0);
+        for (int i=0; i<componentCount; i++) {
+            String preferencePrefix = "component" + Integer.toString(i);
+
+            String componentTypeString = sharedPreferences.getString(preferencePrefix + "type", DashboardComponent.ComponentType.SPEEDMETER.toString());
+            DashboardComponent.ComponentType componentType = DashboardComponent.ComponentType.valueOf(componentTypeString);
+            int posX = sharedPreferences.getInt(preferencePrefix + "posX", 0);
+            int posY = sharedPreferences.getInt(preferencePrefix + "posY", 0);
+            int width = sharedPreferences.getInt(preferencePrefix + "width", -1);
+            int height = sharedPreferences.getInt(preferencePrefix + "height", -1);
+
+            DashboardComponent component = DashboardComponentFactory.createComponentFromData(this, componentType, posX, posY, width, height);
+            dashboardViewLayout.addView(component);
+        }
     }
 }

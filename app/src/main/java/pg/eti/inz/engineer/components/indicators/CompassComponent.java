@@ -1,4 +1,4 @@
-package pg.eti.inz.engineer.components;
+package pg.eti.inz.engineer.components.indicators;
 
 import android.content.Context;
 import android.util.AttributeSet;

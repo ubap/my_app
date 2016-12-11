@@ -75,6 +75,22 @@
                     android:id="@+id/tripViewAverageSpeedView"
                     android:textAlignment="center"
                     android:textSize="@dimen/tripView.ViewTextSize" />
+
+                <TextView
+                    android:text="@string/tripView.duration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tripViewDurationLabel"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/tripView.LabelTextSize" />
+
+                <TextView
+                    android:text="TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tripViewDurationView"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/tripView.ViewTextSize" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

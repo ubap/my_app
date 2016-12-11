@@ -18,7 +18,7 @@
     <string name="map.search">Szukaj</string>
     <string name="title_activity_maps">Mapa</string>
     <string name="map">Mapa</string>
-    <string name="dashboard.add.speedometer">Dodaj prędkościomierz</string>
+    <string name="dashboard.add.speedometer">Prędkościomierz</string>
     <string name="dashboard.title">Wskaźniki</string>
     <string name="dashboard.switchBrightness">Zmień sposób wyświetlania</string>
     <string name="trips.distance">Odległość</string>
@@ -27,8 +27,21 @@
     <string name="trips">Podróże</string>
     <string name="gps.alert.ok">Tak</string>
     <string name="gps.alert.cancel">Nie</string>
-    <string name="map.start.tracking">Rozpocznij śledzenie</string>
+    <string name="map.start.tracking">Rejestruj podróż</string>
     <string name="tripView.avgSpeedLabel">Średnia prędkość</string>
     <string name="tripView.distanceLabel">Dystans</string>
     <string name="tripView.activityName">Podróż</string>
+    <string name="dashboard.add.tripmeter">Przejechany dystans</string>
+    <string name="dashboard.add.minimap">Minimapa</string>
+    <string name="dashboard.switchToMaps">Mapa</string>
+    <string name="dashboard.edit">Edytuj</string>
+    <string name="dashboard.finishEdit">Zakończ</string>
+    <string name="gps.core.notification.notTracking">Aplikacja uruchomiona</string>
+    <string name="gps.core.notification.tracking">Rejestrowanie podróży.</string>
+    <string name="dashboard.remove.component">Usuń</string>
+    <string name="dashboard.component.increaseSize">Powiększ</string>
+    <string name="dashboard.component.decreaseSize">Zmniejsz</string>
+    <string name="tripView.duration">Czas trwania</string>
+    <string name="trips.date">Data</string>
+    <string name="trips.activityName">Podróże</string>
 </resources>
